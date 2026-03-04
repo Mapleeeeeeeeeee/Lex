@@ -65,6 +65,23 @@ public struct FloatingPanelView: View {
                 }
                 .padding(.horizontal, 14).padding(.top, 8).padding(.bottom, 6)
                 
+                // Zhuyin annotation (only for Chinese text)
+                if !viewModel.zhuyinText.isEmpty {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("注音")
+                            .font(.system(size: 9, weight: .bold, design: .rounded))
+                            .foregroundColor(Color.pink.opacity(0.6)).tracking(1.0)
+                        Text(viewModel.zhuyinText)
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundColor(.primary.opacity(0.6))
+                            .lineLimit(3)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .textSelection(.enabled)
+                    }
+                    .padding(.horizontal, 14).padding(.bottom, 6)
+                    .transition(.opacity)
+                }
+                
                 // Provider attribution
                 Text("via \(viewModel.providerName)")
                     .font(.system(size: 9, weight: .regular))

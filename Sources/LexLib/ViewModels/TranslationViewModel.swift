@@ -8,6 +8,7 @@ public class TranslationViewModel: ObservableObject {
     @Published public var isSaved: Bool = false
     @Published public var showCopiedFeedback: Bool = false
     @Published public var providerName: String = ""
+    @Published public var zhuyinText: String = ""
     
     private let synthesizer = NSSpeechSynthesizer()
     private let vocabularyManager: VocabularyManager
@@ -40,8 +41,17 @@ public class TranslationViewModel: ObservableObject {
                     if self?.currentItem?.id == newItem.id {
                         if let translated = resultText {
                             self?.currentItem?.translatedText = translated
+                            // Generate Zhuyin if translation contains Chinese
+                            if ZhuyinConverter.shared.containsChinese(translated) {
+                                self?.zhuyinText = ZhuyinConverter.shared.getZhuyin(translated)
+                            } else if ZhuyinConverter.shared.containsChinese(trimmed) {
+                                self?.zhuyinText = ZhuyinConverter.shared.getZhuyin(trimmed)
+                            } else {
+                                self?.zhuyinText = ""
+                            }
                         } else {
                             self?.currentItem?.translatedText = "翻譯失敗，請檢查網路連線或稍後再試。"
+                            self?.zhuyinText = ""
                         }
                         self?.currentItem?.isTranslating = false
                     }
