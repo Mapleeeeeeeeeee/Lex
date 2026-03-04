@@ -26,7 +26,7 @@
 需求：macOS 13.0+、Swift 5.9+
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/DoubleCmdTranslator.git
+git clone https://github.com/Mapleeeeeeeeeee/DoubleCmdTranslator.git
 cd DoubleCmdTranslator
 make build
 make run

@@ -8,7 +8,7 @@
 - Swift 5.9+（Command Line Tools 即可，不需要 Xcode）
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/DoubleCmdTranslator.git
+git clone https://github.com/Mapleeeeeeeeeee/DoubleCmdTranslator.git
 cd DoubleCmdTranslator
 make build   # 編譯
 make test    # 執行測試
