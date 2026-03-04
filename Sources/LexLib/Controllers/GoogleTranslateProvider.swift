@@ -1,7 +1,7 @@
 import Foundation
 
 /// Google Translate provider using the free, unofficial API endpoint.
-/// This is the default provider bundled with DoubleCmdTranslator.
+/// This is the default provider bundled with Lex.
 public class GoogleTranslateProvider: TranslationProvider {
     
     public var name: String { "Google Translate" }

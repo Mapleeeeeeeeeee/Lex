@@ -5,7 +5,7 @@ struct TestRunner {
     static func main() {
         print("\u{001B}[1;35m")
         print("╔══════════════════════════════════════╗")
-        print("║  DoubleCmdTranslator Test Suite      ║")
+        print("║  Lex Test Suite      ║")
         print("╚══════════════════════════════════════╝")
         print("\u{001B}[0m")
         

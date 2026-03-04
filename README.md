@@ -1,4 +1,4 @@
-# DoubleCmdTranslator
+# Lex
 
 <p align="center">
   <strong>連按兩下 Command 鍵，即時翻譯選取文字</strong>
@@ -26,8 +26,8 @@
 需求：macOS 13.0+、Swift 5.9+
 
 ```bash
-git clone https://github.com/Mapleeeeeeeeeee/DoubleCmdTranslator.git
-cd DoubleCmdTranslator
+git clone https://github.com/Mapleeeeeeeeeee/Lex.git
+cd Lex
 make build
 make run
 ```
@@ -38,7 +38,7 @@ make run
 
 1. 系統會自動彈出提示
 2. 前往「系統設定 → 隱私與安全性 → 輔助使用」
-3. 找到 Terminal（或 DoubleCmdTranslator）並啟用
+3. 找到 Terminal（或 Lex）並啟用
 
 ## 🚀 使用方式
 
@@ -63,7 +63,7 @@ make run
 
 ## 🔌 自訂翻譯來源
 
-DoubleCmdTranslator 使用 Provider 架構，可以輕鬆新增翻譯來源：
+Lex 使用 Provider 架構，可以輕鬆新增翻譯來源：
 
 ```swift
 class DeepLProvider: TranslationProvider {
@@ -98,7 +98,7 @@ make test
 
 ```
 Sources/
-├── DoubleCmdTranslatorLib/          # 核心邏輯（可測試）
+├── LexLib/          # 核心邏輯（可測試）
 │   ├── Controllers/
 │   │   ├── TranslationProvider.swift    # Provider 協議
 │   │   ├── GoogleTranslateProvider.swift
@@ -113,7 +113,7 @@ Sources/
 │   └── Views/
 │       ├── FloatingPanelView.swift
 │       └── VocabularyListView.swift
-├── DoubleCmdTranslatorApp/
+├── LexApp/
 │   └── main.swift                       # App 進入點
 Tests/
 ├── TestFramework.swift                  # 自製 BDD 測試框架

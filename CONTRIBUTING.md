@@ -1,6 +1,6 @@
 # 貢獻指南
 
-感謝你對 DoubleCmdTranslator 的興趣！歡迎提交 Issue 和 Pull Request。
+感謝你對 Lex 的興趣！歡迎提交 Issue 和 Pull Request。
 
 ## 開發環境
 
@@ -8,8 +8,8 @@
 - Swift 5.9+（Command Line Tools 即可，不需要 Xcode）
 
 ```bash
-git clone https://github.com/Mapleeeeeeeeeee/DoubleCmdTranslator.git
-cd DoubleCmdTranslator
+git clone https://github.com/Mapleeeeeeeeeee/Lex.git
+cd Lex
 make build   # 編譯
 make test    # 執行測試
 make run     # 啟動應用
@@ -21,7 +21,7 @@ make run     # 啟動應用
 
 ### 1. 建立 Provider 檔案
 
-在 `Sources/DoubleCmdTranslatorLib/Controllers/` 新增檔案：
+在 `Sources/LexLib/Controllers/` 新增檔案：
 
 ```swift
 // DeepLProvider.swift

@@ -22,7 +22,7 @@ public class VocabularyManager {
     
     public convenience init() {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let appDir = appSupport.appendingPathComponent("DoubleCmdTranslator")
+        let appDir = appSupport.appendingPathComponent("Lex")
         try? FileManager.default.createDirectory(at: appDir, withIntermediateDirectories: true)
         let url = appDir.appendingPathComponent("vocabulary.json")
         self.init(fileURL: url)

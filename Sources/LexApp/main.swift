@@ -2,7 +2,7 @@ import SwiftUI
 import Combine
 
 @main
-struct DoubleCmdTranslatorApp: App {
+struct LexApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some Scene {
@@ -103,7 +103,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         menu.addItem(NSMenuItem.separator())
         
-        let aboutItem = NSMenuItem(title: "關於 DoubleCmdTranslator", action: #selector(showAbout), keyEquivalent: "")
+        let aboutItem = NSMenuItem(title: "關於 Lex", action: #selector(showAbout), keyEquivalent: "")
         aboutItem.image = NSImage(systemSymbolName: "info.circle", accessibilityDescription: nil)
         aboutItem.target = self
         menu.addItem(aboutItem)
@@ -145,7 +145,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @objc private func showAbout() {
         let alert = NSAlert()
-        alert.messageText = "DoubleCmdTranslator"
+        alert.messageText = "Lex"
         alert.informativeText = "連按兩下 Command 鍵即可翻譯選取的文字。\n\n目前使用：\(TranslationService.shared.activeProvider.name)\n\nMade with ❤️"
         alert.alertStyle = .informational
         alert.runModal()
