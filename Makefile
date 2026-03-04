@@ -6,6 +6,7 @@ build:
 	@echo "Building $(APP_NAME)..."
 	@mkdir -p $(APP_BUNDLE)/Contents/MacOS
 	@mkdir -p $(APP_BUNDLE)/Contents/Resources
+	@cp -R Sources/LexLib/Resources/* $(APP_BUNDLE)/Contents/Resources/
 	@swiftc \
 		-parse-as-library \
 		-target $(shell uname -m)-apple-macosx$(MACOS_VERSION_MIN) \
@@ -21,6 +22,8 @@ run: build
 
 test:
 	@echo "Compiling tests..."
+	@mkdir -p Resources
+	@cp -R Sources/LexLib/Resources/* Resources/
 	@swiftc \
 		-target $(shell uname -m)-apple-macosx$(MACOS_VERSION_MIN) \
 		-o test_runner \

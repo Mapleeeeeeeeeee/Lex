@@ -1,28 +1,50 @@
 import Foundation
 
 /// Converts Chinese characters to Zhuyin (Bopomofo) phonetic annotations.
-/// Uses macOS native CFStringTokenizer — no external dependencies needed.
+/// Uses a JSON dictionary generated from kfcd/hyzd data + pinyin-pro for precise character readings,
+/// including handling for heteronyms. Uses CFStringTokenizer as fallback.
 public class ZhuyinConverter {
     
     public static let shared = ZhuyinConverter()
     
-    public init() {}
+    // Character -> [Zhuyin] (Multiple readings for heteronyms)
+    private var dictionary: [String: [String]] = [:]
     
-    /// Convert a Chinese string to Zhuyin annotation.
-    /// Returns an array of (character, zhuyin) tuples.
-    /// Non-Chinese characters have nil zhuyin.
+    public init() {
+        loadDictionary()
+    }
+    
+    private func loadDictionary() {
+        // Find zhuyin_dict.json relative to the executable path (for make build)
+        // In local makefile build, the executable is inside Lex.app/Contents/MacOS/
+        // We'll bundle the Resources into Lex.app/Contents/Resources/
+        do {
+            let execURL = URL(fileURLWithPath: Bundle.main.executablePath ?? CommandLine.arguments[0])
+            let appURL = execURL.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            let resURL = appURL.appendingPathComponent("Resources/zhuyin_dict.json")
+            
+            if FileManager.default.fileExists(atPath: resURL.path) {
+                let data = try Data(contentsOf: resURL)
+                self.dictionary = try JSONDecoder().decode([String: [String]].self, from: data)
+            } else {
+                // Testing fallback
+                let testResURL = URL(fileURLWithPath: #file).deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("Resources/zhuyin_dict.json")
+                if FileManager.default.fileExists(atPath: testResURL.path) {
+                    let data = try Data(contentsOf: testResURL)
+                    self.dictionary = try JSONDecoder().decode([String: [String]].self, from: data)
+                }
+            }
+        } catch {
+            print("Error parsing zhuyin_dict.json: \(error)")
+        }
+    }
+    
     public func annotate(_ text: String) -> [(character: String, zhuyin: String?)] {
         var result: [(character: String, zhuyin: String?)] = []
         
         let cfText = text as CFString
         let range = CFRangeMake(0, CFStringGetLength(cfText))
-        let tokenizer = CFStringTokenizerCreate(
-            kCFAllocatorDefault,
-            cfText,
-            range,
-            kCFStringTokenizerUnitWord,
-            CFLocaleCopyCurrent()
-        )
+        let tokenizer = CFStringTokenizerCreate(kCFAllocatorDefault, cfText, range, kCFStringTokenizerUnitWord, CFLocaleCopyCurrent())
         
         var tokenType = CFStringTokenizerAdvanceToNextToken(tokenizer)
         var lastEnd = 0
@@ -32,34 +54,34 @@ public class ZhuyinConverter {
             let start = tokenRange.location
             let length = tokenRange.length
             
-            // Handle any gap before this token (non-tokenized characters)
             if start > lastEnd {
                 let gapStart = text.index(text.startIndex, offsetBy: lastEnd)
                 let gapEnd = text.index(text.startIndex, offsetBy: start)
-                for ch in text[gapStart..<gapEnd] {
-                    result.append((String(ch), nil))
-                }
+                for ch in text[gapStart..<gapEnd] { result.append((String(ch), nil)) }
             }
             
-            // Extract Zhuyin for this token
             let tokenStart = text.index(text.startIndex, offsetBy: start)
             let tokenEnd = text.index(text.startIndex, offsetBy: start + length)
             let tokenText = String(text[tokenStart..<tokenEnd])
             
-            if let latinRef = CFStringTokenizerCopyCurrentTokenAttribute(tokenizer, kCFStringTokenizerAttributeLatinTranscription) {
-                let latin = latinRef as! CFString as String
-                let zhuyin = latinToZhuyin(latin)
-                
-                // If multi-character token, try to split per character
-                if tokenText.count > 1 {
-                    let zhuyinParts = splitZhuyinPerCharacter(text: tokenText, fullZhuyin: zhuyin)
-                    result.append(contentsOf: zhuyinParts)
+            for ch in tokenText {
+                let charStr = String(ch)
+                if isCJK(ch.unicodeScalars.first!) {
+                    if let readings = dictionary[charStr], let firstReading = readings.first {
+                        result.append((charStr, firstReading))
+                    } else {
+                        let cfChar = charStr as CFString
+                        let charTokenizer = CFStringTokenizerCreate(kCFAllocatorDefault, cfChar, CFRangeMake(0, CFStringGetLength(cfChar)), kCFStringTokenizerUnitWord, CFLocaleCopyCurrent())
+                        let _ = CFStringTokenizerAdvanceToNextToken(charTokenizer)
+                        if let latinRef = CFStringTokenizerCopyCurrentTokenAttribute(charTokenizer, kCFStringTokenizerAttributeLatinTranscription) {
+                            let latin = latinRef as! CFString as String
+                            result.append((charStr, latinToZhuyin(latin)))
+                        } else {
+                            result.append((charStr, nil))
+                        }
+                    }
                 } else {
-                    result.append((tokenText, zhuyin))
-                }
-            } else {
-                for ch in tokenText {
-                    result.append((String(ch), nil))
+                    result.append((charStr, nil))
                 }
             }
             
@@ -67,75 +89,31 @@ public class ZhuyinConverter {
             tokenType = CFStringTokenizerAdvanceToNextToken(tokenizer)
         }
         
-        // Handle remaining characters after last token
         if lastEnd < text.count {
             let remaining = text.index(text.startIndex, offsetBy: lastEnd)
-            for ch in text[remaining...] {
-                result.append((String(ch), nil))
-            }
+            for ch in text[remaining...] { result.append((String(ch), nil)) }
         }
         
         return result
     }
     
-    /// Get a simple Zhuyin string for display (space-separated)
     public func getZhuyin(_ text: String) -> String {
-        let annotations = annotate(text)
-        return annotations.compactMap { $0.zhuyin }.joined(separator: " ")
+        return annotate(text).compactMap { $0.zhuyin }.joined(separator: " ")
     }
     
-    /// Check if text contains Chinese characters
     public func containsChinese(_ text: String) -> Bool {
-        for scalar in text.unicodeScalars {
-            if isCJK(scalar) { return true }
-        }
+        for scalar in text.unicodeScalars { if isCJK(scalar) { return true } }
         return false
     }
     
-    // MARK: - Private
-    
     private func isCJK(_ scalar: Unicode.Scalar) -> Bool {
         let v = scalar.value
-        return (v >= 0x4E00 && v <= 0x9FFF) ||   // CJK Unified
-               (v >= 0x3400 && v <= 0x4DBF) ||    // CJK Extension A
-               (v >= 0xF900 && v <= 0xFAFF)       // CJK Compatibility
+        return (v >= 0x4E00 && v <= 0x9FFF) || (v >= 0x3400 && v <= 0x4DBF) || (v >= 0xF900 && v <= 0xFAFF)
     }
     
-    /// Convert Pinyin latin transcription to Zhuyin (Bopomofo)
     private func latinToZhuyin(_ latin: String) -> String {
-        let cfStr = latin as CFString
-        let mutableStr = CFStringCreateMutableCopy(kCFAllocatorDefault, 0, cfStr)!
+        let mutableStr = CFStringCreateMutableCopy(kCFAllocatorDefault, 0, latin as CFString)!
         CFStringTransform(mutableStr, nil, "Latin-Bopomofo" as CFString, false)
         return mutableStr as String
-    }
-    
-    /// Try to split a multi-character Zhuyin annotation per character
-    private func splitZhuyinPerCharacter(text: String, fullZhuyin: String) -> [(character: String, zhuyin: String?)] {
-        // Use per-character tokenization for splitting
-        var perChar: [(character: String, zhuyin: String?)] = []
-        
-        for ch in text {
-            let charStr = String(ch)
-            if isCJK(ch.unicodeScalars.first!) {
-                let cfChar = charStr as CFString
-                let charRange = CFRangeMake(0, CFStringGetLength(cfChar))
-                let charTokenizer = CFStringTokenizerCreate(
-                    kCFAllocatorDefault, cfChar, charRange,
-                    kCFStringTokenizerUnitWord, CFLocaleCopyCurrent()
-                )
-                
-                let _ = CFStringTokenizerAdvanceToNextToken(charTokenizer)
-                if let latinRef = CFStringTokenizerCopyCurrentTokenAttribute(charTokenizer, kCFStringTokenizerAttributeLatinTranscription) {
-                    let latin = latinRef as! CFString as String
-                    perChar.append((charStr, latinToZhuyin(latin)))
-                } else {
-                    perChar.append((charStr, nil))
-                }
-            } else {
-                perChar.append((charStr, nil))
-            }
-        }
-        
-        return perChar
     }
 }
