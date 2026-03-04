@@ -42,31 +42,40 @@ public struct FloatingPanelView: View {
                 }
                 .padding(.horizontal, 14).padding(.top, 10).padding(.bottom, 8)
                 
-                Rectangle()
-                    .fill(LinearGradient(colors: [Color.blue.opacity(0.3), Color.purple.opacity(0.3)],
-                                         startPoint: .leading, endPoint: .trailing))
-                    .frame(height: 1).padding(.horizontal, 14)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("翻譯結果")
-                        .font(.system(size: 9, weight: .bold, design: .rounded))
-                        .foregroundColor(Color.purple.opacity(0.6)).tracking(1.0)
-                    HStack(alignment: .top, spacing: 6) {
-                        if item.isTranslating {
-                            ProgressView().scaleEffect(0.6).frame(width: 14, height: 14)
+                // Show translation section only if there's a translation (not Chinese-only mode)
+                if !item.translatedText.isEmpty {
+                    Rectangle()
+                        .fill(LinearGradient(colors: [Color.blue.opacity(0.3), Color.purple.opacity(0.3)],
+                                             startPoint: .leading, endPoint: .trailing))
+                        .frame(height: 1).padding(.horizontal, 14)
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("翻譯結果")
+                            .font(.system(size: 9, weight: .bold, design: .rounded))
+                            .foregroundColor(Color.purple.opacity(0.6)).tracking(1.0)
+                        HStack(alignment: .top, spacing: 6) {
+                            if item.isTranslating {
+                                ProgressView().scaleEffect(0.6).frame(width: 14, height: 14)
+                            }
+                            Text(item.translatedText)
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.primary)
+                                .lineLimit(6).multilineTextAlignment(.leading)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .textSelection(.enabled)
                         }
-                        Text(item.translatedText)
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.primary)
-                            .lineLimit(6).multilineTextAlignment(.leading)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .textSelection(.enabled)
                     }
+                    .padding(.horizontal, 14).padding(.top, 8).padding(.bottom, 6)
                 }
-                .padding(.horizontal, 14).padding(.top, 8).padding(.bottom, 6)
                 
                 // Zhuyin annotation (only for Chinese text)
                 if !viewModel.zhuyinText.isEmpty {
+                    if !item.translatedText.isEmpty {
+                        Rectangle()
+                            .fill(LinearGradient(colors: [Color.purple.opacity(0.2), Color.pink.opacity(0.2)],
+                                                 startPoint: .leading, endPoint: .trailing))
+                            .frame(height: 1).padding(.horizontal, 14)
+                    }
                     VStack(alignment: .leading, spacing: 3) {
                         Text("注音")
                             .font(.system(size: 9, weight: .bold, design: .rounded))
@@ -78,16 +87,20 @@ public struct FloatingPanelView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .textSelection(.enabled)
                     }
-                    .padding(.horizontal, 14).padding(.bottom, 6)
+                    .padding(.horizontal, 14).padding(.top, item.translatedText.isEmpty ? 8 : 6).padding(.bottom, 6)
                     .transition(.opacity)
                 }
                 
-                // Provider attribution
-                Text("via \(viewModel.providerName)")
-                    .font(.system(size: 9, weight: .regular))
-                    .foregroundColor(.secondary.opacity(0.5))
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                    .padding(.horizontal, 14).padding(.bottom, 10)
+                // Provider attribution (only when translation API was used)
+                if !item.translatedText.isEmpty {
+                    Text("via \(viewModel.providerName)")
+                        .font(.system(size: 9, weight: .regular))
+                        .foregroundColor(.secondary.opacity(0.5))
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .padding(.horizontal, 14).padding(.bottom, 10)
+                } else {
+                    Spacer().frame(height: 6)
+                }
                 
                 if viewModel.showCopiedFeedback {
                     HStack(spacing: 4) {

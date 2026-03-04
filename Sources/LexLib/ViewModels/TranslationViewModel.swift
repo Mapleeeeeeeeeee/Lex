@@ -24,6 +24,23 @@ public class TranslationViewModel: ObservableObject {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         
+        // If input is Chinese, skip translation — show Zhuyin only
+        if ZhuyinConverter.shared.containsChinese(trimmed) {
+            let item = TranslationItem(
+                originalText: trimmed,
+                translatedText: "",
+                isTranslating: false
+            )
+            DispatchQueue.main.async {
+                self.currentItem = item
+                self.showPanel = true
+                self.isSaved = self.vocabularyManager.isSaved(original: trimmed)
+                self.showCopiedFeedback = false
+                self.zhuyinText = ZhuyinConverter.shared.getZhuyin(trimmed)
+            }
+            return
+        }
+        
         let newItem = TranslationItem(
             originalText: trimmed,
             translatedText: "翻譯中...",
@@ -41,11 +58,9 @@ public class TranslationViewModel: ObservableObject {
                     if self?.currentItem?.id == newItem.id {
                         if let translated = resultText {
                             self?.currentItem?.translatedText = translated
-                            // Generate Zhuyin if translation contains Chinese
+                            // Generate Zhuyin for Chinese translation result
                             if ZhuyinConverter.shared.containsChinese(translated) {
                                 self?.zhuyinText = ZhuyinConverter.shared.getZhuyin(translated)
-                            } else if ZhuyinConverter.shared.containsChinese(trimmed) {
-                                self?.zhuyinText = ZhuyinConverter.shared.getZhuyin(trimmed)
                             } else {
                                 self?.zhuyinText = ""
                             }
