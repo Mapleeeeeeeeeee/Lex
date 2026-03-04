@@ -372,3 +372,15 @@ func runTranslationProviderTests() {
         }
     }
 }
+
+// =============================================================================
+// MARK: - Combined Runner
+// =============================================================================
+
+func runAllTests() {
+    runTranslationItemTests()
+    runVocabularyManagerTests()
+    runTranslationServiceIntegrationTests()
+    runTranslationProviderTests()
+    runZhuyinTests()
+}

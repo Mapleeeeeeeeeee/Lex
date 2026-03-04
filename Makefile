@@ -29,7 +29,7 @@ test:
 		-o test_runner \
 		-framework Cocoa -framework Combine \
 		Sources/LexLib/**/*.swift \
-		Tests/TestFramework.swift Tests/AllTests.swift Tests/TestRunner.swift
+		Tests/*.swift
 	@echo "Running tests..."
 	@./test_runner
 	@rm -f test_runner

@@ -3,22 +3,14 @@ import Foundation
 @main
 struct TestRunner {
     static func main() {
-        print("\u{001B}[1;35m")
-        print("╔══════════════════════════════════════╗")
-        print("║  Lex Test Suite      ║")
-        print("╚══════════════════════════════════════╝")
-        print("\u{001B}[0m")
+        print("Running Lex tests...\n")
         
-        // Run all test suites
-        runTranslationItemTests()
-        runVocabularyManagerTests()
-        runTranslationServiceIntegrationTests()
-        runTranslationProviderTests()
+        runAllTests()
         
-        // Print summary
         printSummary()
         
-        // Exit with appropriate code
-        exit(failedTests > 0 ? 1 : 0)
+        if failedTests > 0 {
+            exit(1)
+        }
     }
 }
