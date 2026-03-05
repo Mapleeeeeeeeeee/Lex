@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.5] - 2026-03-06
+### Added
+- 🔊 **English Phonetic Symbols (IPA)**: Display standard pronunciation brackets underneath the original text when querying English words.
+
 ## [1.1.4] - 2026-03-06
 ### Added
 - 🔠 **Zhuyin Disambiguation**: Implemented "Primary Reading Heuristic" to pick the most common reading for polyphones (e.g., "開發中" now shows `ㄓㄨㄥ`).
