@@ -144,11 +144,40 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc private func showAbout() {
-        let alert = NSAlert()
-        alert.messageText = "Lex"
-        alert.informativeText = "連按兩下 Command 鍵即可翻譯選取的文字。\n\n目前使用：\(TranslationService.shared.activeProvider.name)\n\nMade with ❤️"
-        alert.alertStyle = .informational
-        alert.runModal()
+        let creditsHtml = """
+        <div style="text-align: center; font-family: -apple-system, sans-serif;">
+            <p><b>💻 開發者 (Developer)</b><br>
+            Maple Kuo</p>
+            <p>
+                <a href="https://www.facebook.com/profile.php?id=61585105004197">Facebook</a> | 
+                <a href="https://www.linkedin.com/in/maplekuo">LinkedIn</a> | 
+                <a href="https://github.com/Mapleeeeeeeeeee">GitHub</a>
+            </p>
+            <br>
+            <p><b>📚 注音資料來源 (Data Source)</b><br>
+            教育部《國語辭典簡編本》<br>
+            授權：<a href="https://creativecommons.org/licenses/by-nd/3.0/tw/">CC BY-ND 3.0 TW</a></p>
+        </div>
+        """
+        
+        let data = creditsHtml.data(using: .utf8)!
+        let attrStr = try? NSAttributedString(
+            data: data,
+            options: [
+                .documentType: NSAttributedString.DocumentType.html,
+                .characterEncoding: String.Encoding.utf8.rawValue
+            ],
+            documentAttributes: nil
+        )
+        
+        let options: [NSApplication.AboutPanelOptionKey: Any] = [
+            .credits: attrStr ?? NSAttributedString(string: "Made with ❤️"),
+            .applicationName: "Lex",
+            .applicationVersion: "v1.0.0"
+        ]
+        
+        NSApp.activate(ignoringOtherApps: true)
+        NSApplication.shared.orderFrontStandardAboutPanel(options: options)
     }
     
     @objc private func quitApp() {
