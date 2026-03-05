@@ -25,6 +25,6 @@ public protocol TranslationProvider {
     ///   - text: The text to translate
     ///   - from: Source language code ("auto" for auto-detect)
     ///   - to: Target language code (e.g., "zh-TW")
-    ///   - completion: Callback with translated text or nil on failure
-    func translate(text: String, from: String, to: String, completion: @escaping (String?) -> Void)
+    ///   - completion: Callback with `(translatedText, sourcePhonetics)` or nil values
+    func translate(text: String, from: String, to: String, completion: @escaping (String?, String?) -> Void)
 }

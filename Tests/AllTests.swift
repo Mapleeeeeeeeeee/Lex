@@ -218,7 +218,7 @@ func runTranslationServiceIntegrationTests() {
                 let semaphore = DispatchSemaphore(value: 0)
                 var result: String?
                 
-                svc.translate(text: word) { translated in
+                svc.translate(text: word) { translated, _ in
                     result = translated
                     semaphore.signal()
                 }
@@ -240,7 +240,7 @@ func runTranslationServiceIntegrationTests() {
             let semaphore = DispatchSemaphore(value: 0)
             var result: String?
             
-            svc.translate(text: "The quick brown fox jumps over the lazy dog") { translated in
+            svc.translate(text: "The quick brown fox jumps over the lazy dog") { translated, _ in
                 result = translated
                 semaphore.signal()
             }
@@ -265,7 +265,7 @@ func runTranslationServiceIntegrationTests() {
                 let semaphore = DispatchSemaphore(value: 0)
                 var result: String?
                 
-                svc.translate(text: tc.input) { translated in
+                svc.translate(text: tc.input) { translated, _ in
                     result = translated
                     semaphore.signal()
                 }
@@ -289,9 +289,9 @@ class MockTranslationProvider: TranslationProvider {
     var lastTranslatedText: String?
     var mockResult: String?
     
-    func translate(text: String, from: String, to: String, completion: @escaping (String?) -> Void) {
+    func translate(text: String, from: String, to: String, completion: @escaping (String?, String?) -> Void) {
         lastTranslatedText = text
-        completion(mockResult ?? "[MOCK] \(text)")
+        completion(mockResult ?? "[MOCK] \(text)", "[MOCK_Phonetics] \(text)")
     }
 }
 
@@ -321,7 +321,7 @@ func runTranslationProviderTests() {
             let semaphore = DispatchSemaphore(value: 0)
             var result: String?
             
-            mock.translate(text: "Test", from: "en", to: "zh-TW") { translated in
+            mock.translate(text: "Test", from: "en", to: "zh-TW") { translated, _ in
                 result = translated
                 semaphore.signal()
             }
@@ -346,7 +346,7 @@ func runTranslationProviderTests() {
             
             let semaphore = DispatchSemaphore(value: 0)
             var result: String?
-            svc.translate(text: "Switch test") { translated in
+            svc.translate(text: "Switch test") { translated, _ in
                 result = translated
                 semaphore.signal()
             }

@@ -39,6 +39,13 @@ public struct FloatingPanelView: View {
                         .lineLimit(4).multilineTextAlignment(.leading)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .textSelection(.enabled)
+                        
+                    if let phonetics = item.phonetics, !phonetics.isEmpty {
+                        Text("[\(phonetics)]")
+                            .font(.system(size: 11, weight: .regular, design: .rounded))
+                            .foregroundColor(.secondary.opacity(0.8))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
                 }
                 .padding(.horizontal, 14).padding(.top, 10).padding(.bottom, 8)
                 

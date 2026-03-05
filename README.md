@@ -86,9 +86,9 @@ class DeepLProvider: TranslationProvider {
     var name: String { "DeepL" }
     var identifier: String { "deepl" }
     
-    func translate(text: String, from: String, to: String, 
-                   completion: @escaping (String?) -> Void) {
-        // 你的翻譯邏輯
+    func translate(text: String, from: String, to: String, completion: @escaping (String?, String?) -> Void) {
+        // ... API 呼叫 ...
+        completion("Bonjour", "[bɔ̃ʒuʁ]")
     }
 }
 

@@ -61,11 +61,12 @@ public class TranslationViewModel: ObservableObject {
             self.isSaved = self.vocabularyManager.isSaved(original: trimmed)
             self.showCopiedFeedback = false
             
-            self.translationService.translate(text: trimmed) { [weak self] resultText in
+            self.translationService.translate(text: trimmed) { [weak self] resultText, resultPhonetics in
                 updateState {
                     if self?.currentItem?.id == newItem.id {
                         if let translated = resultText {
                             self?.currentItem?.translatedText = translated
+                            self?.currentItem?.phonetics = resultPhonetics
                             // User requirement: English to TC should NOT show Zhuyin
                             self?.zhuyinText = ""
                         } else {
@@ -120,9 +121,21 @@ public class TranslationViewModel: ObservableObject {
     
     // MARK: - Copy
     public func copyTranslation() {
-        guard let text = currentItem?.translatedText, !text.isEmpty else { return }
+        guard let item = currentItem else { return }
+        
+        let textToCopy: String
+        if !item.translatedText.isEmpty && !item.isTranslating {
+            textToCopy = item.translatedText
+        } else if !zhuyinText.isEmpty {
+            textToCopy = zhuyinText
+        } else {
+            textToCopy = item.originalText
+        }
+        
+        guard !textToCopy.isEmpty else { return }
+        
         NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(text, forType: .string)
+        NSPasteboard.general.setString(textToCopy, forType: .string)
         showCopiedFeedback = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             self.showCopiedFeedback = false
