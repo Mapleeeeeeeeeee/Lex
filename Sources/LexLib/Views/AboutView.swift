@@ -16,7 +16,7 @@ public struct AboutView: View {
                 Text("Lex")
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                 
-                Text("v1.1.0")
+                Text("v1.1.3")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
