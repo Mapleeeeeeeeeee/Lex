@@ -36,6 +36,20 @@ test:
 	@rm -f test_runner
 
 clean:
-	@rm -rf $(APP_BUNDLE) .build
+	@rm -rf $(APP_BUNDLE) .build Lex.dmg Lex.app.zip
 	@echo "Cleaned up."
 
+zip: build
+	@echo "Packaging ZIP..."
+	@zip -r Lex.app.zip Lex.app
+
+dmg: build
+	@echo "Packaging DMG..."
+	@mkdir -p build_dmg
+	@cp -R Lex.app build_dmg/
+	@ln -s /Applications build_dmg/Applications
+	@hdiutil create -volname "$(APP_NAME)" -srcfolder build_dmg -ov -format UDZO $(APP_NAME).dmg
+	@rm -rf build_dmg
+
+release: zip dmg
+	@echo "Release packages ready."

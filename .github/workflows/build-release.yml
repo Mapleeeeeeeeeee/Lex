@@ -1,0 +1,34 @@
+name: Build and Upload Release Assets
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+      
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build Application
+        run: |
+          make build
+          
+      - name: Create ZIP Archive
+        run: |
+          make zip
+          
+      - name: Create DMG Image
+        run: |
+          make dmg
+          
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            Lex.dmg
+            Lex.app.zip
