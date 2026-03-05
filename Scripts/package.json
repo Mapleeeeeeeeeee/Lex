@@ -3,6 +3,7 @@
   "type": "module",
   "dependencies": {
     "node-fetch": "^3.3.2",
-    "pinyin": "^2.11.2"
+    "pinyin": "^2.11.2",
+    "xlsx": "^0.18.5"
   }
 }
