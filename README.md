@@ -121,6 +121,12 @@ Tests/
 └── TestRunner.swift
 ```
 
+## 📚 資料來源
+
+注音資料來源：教育部《國語辭典簡編本》  
+授權條款：[CC BY-ND 3.0 TW](https://creativecommons.org/licenses/by-nd/3.0/tw/)  
+著作權人：中華民國教育部
+
 ## 📄 授權
 
 本專案採用 [Apache License 2.0](LICENSE) 授權。
