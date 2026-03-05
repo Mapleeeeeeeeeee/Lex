@@ -12,6 +12,8 @@
   macOS 原生翻譯工具 · 輕量無干擾 · 支援自訂翻譯來源
 </p>
 
+繁體中文 | [English](README.en.md)
+
 ---
 
 ## ✨ 功能特色
@@ -27,9 +29,13 @@
 
 ### 一般使用者（推薦）
 
-1. 前往 **[Releases](../../releases)** 頁面，下載最新的 `Lex.app.zip`
-2. 解壓縮後，將 `Lex.app` 拖曳到 **「應用程式 (Applications)」** 資料夾
-3. **⚠️ 首次開啟注意：** 由於未上架 App Store，請在 Finder 中對著 Lex **點擊滑鼠右鍵，選擇「打開」**，以繞過 macOS 的安全阻擋。
+1. 前往 **[Releases](../../releases)** 頁面，下載最新的 `Lex.dmg` 或 `Lex.app.zip`
+2. 將 `Lex.app` 拖曳到 **「應用程式 (Applications)」** 資料夾
+3. **⚠️ 「檔案已損壞」解決方法：** 由於未經 Apple 開發者帳號簽名，macOS 可能會顯示「Lex.app 已損壞，無法打開」。請打開 **終端機 (Terminal)** 並輸入以下指令來解除安全限制：
+   ```bash
+   xattr -cr /Applications/Lex.app
+   ```
+   執行後即可正常開啟。
 
 ### 開發者（從原始碼編譯）
 
@@ -133,7 +139,7 @@ Tests/
 
 ## 📚 資料來源
 
-注音資料來源：教育部《國語辭典簡編本》  
+注音資料來源：[教育部《國語辭典簡編本》](https://dict.concised.moe.edu.tw/)  
 授權條款：[CC BY-ND 3.0 TW](https://creativecommons.org/licenses/by-nd/3.0/tw/)  
 著作權人：中華民國教育部
 

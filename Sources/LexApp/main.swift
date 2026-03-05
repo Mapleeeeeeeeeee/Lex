@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import ServiceManagement
 
 @main
 struct LexApp: App {
@@ -103,6 +104,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         menu.addItem(NSMenuItem.separator())
         
+        let launchAtLoginItem = NSMenuItem(title: "開機自動啟動", action: #selector(toggleLaunchAtLogin(_:)), keyEquivalent: "")
+        launchAtLoginItem.target = self
+        launchAtLoginItem.state = SMAppService.mainApp.status == .enabled ? .on : .off
+        menu.addItem(launchAtLoginItem)
+        
+        menu.addItem(NSMenuItem.separator())
+        
         let aboutItem = NSMenuItem(title: "關於 Lex", action: #selector(showAbout), keyEquivalent: "")
         aboutItem.image = NSImage(systemSymbolName: "info.circle", accessibilityDescription: nil)
         aboutItem.target = self
@@ -143,6 +151,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         vocabWindow = window
     }
     
+    @objc private func toggleLaunchAtLogin(_ sender: NSMenuItem) {
+        do {
+            if SMAppService.mainApp.status == .enabled {
+                try SMAppService.mainApp.unregister()
+                sender.state = .off
+            } else {
+                try SMAppService.mainApp.register()
+                sender.state = .on
+            }
+        } catch {
+            print("Failed to toggle launch at login \(error)")
+        }
+    }
+    
     @objc private func showAbout() {
         let creditsHtml = """
         <div style="text-align: center; font-family: -apple-system, sans-serif;">
@@ -155,7 +177,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             </p>
             <br>
             <p><b>📚 注音資料來源 (Data Source)</b><br>
-            教育部《國語辭典簡編本》<br>
+            <a href="https://dict.concised.moe.edu.tw/">教育部《國語辭典簡編本》</a><br>
             授權：<a href="https://creativecommons.org/licenses/by-nd/3.0/tw/">CC BY-ND 3.0 TW</a></p>
         </div>
         """
