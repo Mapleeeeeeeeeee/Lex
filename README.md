@@ -1,6 +1,10 @@
 # Lex
 
 <p align="center">
+  <img src="Assets/icon.png" width="128" height="128" alt="Lex Icon">
+</p>
+
+<p align="center">
   <strong>連按兩下 Command 鍵，即時翻譯選取文字</strong>
 </p>
 
