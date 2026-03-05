@@ -166,19 +166,61 @@ func runZhuyinTests() {
         }
         
         // =====================================================================
+        // MARK: - Commonly Mispronounced Words (Taiwan)
+        // =====================================================================
+        
+        it("given commonly mispronounced words, then returns correct authoritative reading") {
+            // 骰子 (ㄊㄡˊ ˙ㄗ not ㄕㄞˇ)
+            let dice = converter.annotate("骰子")
+            try assertEqual(dice[0].zhuyin, "ㄊㄡˊ")
+            
+            // 曝光 (ㄆㄨˋ ㄍㄨㄤ not ㄅㄠˋ)
+            let exposure = converter.annotate("曝光")
+            try assertEqual(exposure[0].zhuyin, "ㄆㄨˋ")
+            
+            // 龜裂 (ㄐㄩㄣ ㄌㄧㄝˋ not ㄍㄨㄟ)
+            let crack = converter.annotate("龜裂")
+            try assertEqual(crack[0].zhuyin, "ㄐㄩㄣ")
+            
+            // 蛤蜊 (ㄍㄜˊ ㄌㄧˊ not ㄍㄜˇ ㄌㄧˋ)
+            let clam = converter.annotate("蛤蜊")
+            try assertEqual(clam[0].zhuyin, "ㄍㄜˊ")
+            try assertEqual(clam[1].zhuyin, "ㄌㄧˊ")
+            
+            // 脂肪 (ㄓ ㄈㄤˊ not ㄓˇ)
+            let fat = converter.annotate("脂肪")
+            try assertEqual(fat[0].zhuyin, "ㄓ")
+            
+            // 牛仔褲 (ㄗㄞˇ not ㄗˇ)
+            let jeans = converter.annotate("牛仔褲")
+            try assertEqual(jeans[1].zhuyin, "ㄗㄞˇ")
+            
+            // 巷弄 (ㄌㄨㄥˋ not ㄋㄨㄥˋ)
+            let alley = converter.annotate("巷弄")
+            try assertEqual(alley[1].zhuyin, "ㄌㄨㄥˋ")
+            
+            // 友誼 (ㄧㄡˇ ㄧˋ not ㄧˊ)
+            let friendship = converter.annotate("友誼")
+            try assertEqual(friendship[1].zhuyin, "ㄧˋ")
+        }
+        
+        // =====================================================================
         // MARK: - Single-character defaults (no word context)
         // =====================================================================
         
-        it("given single polyphone characters alone, then returns MOE default reading") {
-            // 單獨查一個字，只能回傳字典裡的預設音
-            // 這是已知限制：沒有上下文時無法判斷正確讀音
+        it("given single polyphone characters alone, then returns all possible readings") {
+            // 單獨查一個字時，會列出字典裡收錄的所有合法讀音（以斜線分隔）
             let xing = converter.annotate("行")
             try assertEqual(xing.count, 1)
-            try assertNotNil(xing[0].zhuyin, "行 should have a default reading")
+            try assertEqual(xing[0].zhuyin, "ㄏㄤˊ / ㄏㄤˋ / ㄒㄧㄥˊ / ㄒㄧㄥˋ")
             
             let le = converter.annotate("樂")
             try assertEqual(le.count, 1)
-            try assertNotNil(le[0].zhuyin, "樂 should have a default reading")
+            try assertEqual(le[0].zhuyin, "ㄌㄜˋ / ㄧㄠˋ / ㄩㄝˋ")
+            
+            let chong = converter.annotate("重")
+            try assertEqual(chong.count, 1)
+            try assertEqual(chong[0].zhuyin, "ㄓㄨㄥˋ / ㄔㄨㄥˊ")
         }
         
         // =====================================================================
