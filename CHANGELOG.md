@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.1.3...v1.1.4) (2026-03-05)
+
+
+### Bug Fixes
+
+* 更新 About 視窗版本號為 v1.1.3 ([ffa1c83](https://github.com/Mapleeeeeeeeeee/Lex/commit/ffa1c834ced1b6dd89a3706395d4c56d75200038))
+
 ## [1.1.0](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.0.0...v1.1.0) (2026-03-05)
 
 
