@@ -31,6 +31,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // Setup AppController
         AppController.shared.viewModel = viewModel
+        
+        // Initial accessibility check
+        if !AXIsProcessTrusted() {
+            let alert = NSAlert()
+            alert.messageText = "需要輔助使用權限"
+            alert.informativeText = "Lex 需要「輔助使用」權限才能偵測您的 Command 鍵雙擊動作並取得選取文字。\n\n請在系統設定中授予 Lex 權限。"
+            alert.alertStyle = .warning
+            alert.addButton(withTitle: "前往設定")
+            alert.addButton(withTitle: "稍後再說")
+            
+            if alert.runModal() == .alertFirstButtonReturn {
+                if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") {
+                    NSWorkspace.shared.open(url)
+                }
+            }
+        }
+        
         AppController.shared.startListening()
         
         // Setup translation floating panel

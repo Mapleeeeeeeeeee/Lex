@@ -14,11 +14,15 @@ public class AppController {
     public init() {}
     
     public func startListening() {
+        // Check for accessibility permissions
         let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
         let accessEnabled = AXIsProcessTrustedWithOptions(options)
         
         if !accessEnabled {
             print("WARNING: Accessibility permissions are not enabled. The app cannot listen for global hotkeys.")
+            // The call above with prompt: true already triggers the system security dialog.
+            // But we can also show our own alert if needed.
+            return
         }
         
         let eventMask = (1 << CGEventType.flagsChanged.rawValue)
