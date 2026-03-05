@@ -118,6 +118,12 @@ Bopomofo (Zhuyin) data source: [Ministry of Education "Concise Mandarin Chinese 
 License: [CC BY-ND 3.0 TW](https://creativecommons.org/licenses/by-nd/3.0/tw/)  
 Copyright Holder: Ministry of Education, R.O.C.
 
+### 🔠 Bopomofo Disambiguation Strategy (Polyphones)
+Lex uses a **"Longest Match"** + **"Primary Reading Heuristic"** to handle characters with multiple readings:
+- **Dictionary Word Priority**: Words like "龜裂" (fissure) are matched as complete entries from the dictionary, ensuring precise readings (e.g., `ㄐㄩㄣ ㄌㄧㄝˋ`) even if individual characters have multiple pronunciations.
+- **Contextual Simplification**: In a multi-character phrase (e.g., "開發中"), if a character (like "中") has multiple dictionary readings (ㄓㄨㄥ/ㄓㄨㄥˋ), the system automatically picks the first (most common) reading as defined in the MOE Official List of Lexical Readings. This reduces visual clutter from slashes ( / ).
+- **Single Character Full View**: When querying a single character alone, all possible readings are displayed for exploration.
+
 ## 📄 License
 
 This project is licensed under the [Apache License 2.0](LICENSE).

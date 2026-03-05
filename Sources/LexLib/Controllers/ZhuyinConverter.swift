@@ -24,38 +24,56 @@ public class ZhuyinConverter {
     
     private func loadDictionary() {
         do {
-            // Try app bundle path first (make build)
-            let execURL = URL(fileURLWithPath: Bundle.main.executablePath ?? CommandLine.arguments[0])
-            let appURL = execURL.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
-            let resURL = appURL.appendingPathComponent("Resources/moe_zhuyin.json")
+            var data: Data?
             
-            if FileManager.default.fileExists(atPath: resURL.path) {
-                let data = try Data(contentsOf: resURL)
-                self.dictionary = try JSONDecoder().decode([String: String].self, from: data)
-            } else {
-                // Testing / development fallback: look relative to source
+            // 1. Standard bundle resource lookup (preferred for packaged app)
+            if let bundleURL = Bundle.main.url(forResource: "moe_zhuyin", withExtension: "json") {
+                data = try Data(contentsOf: bundleURL)
+            }
+            
+            // 2. Manual path lookup (fallback for CLI or non-standard loading)
+            if data == nil {
+                let execURL = URL(fileURLWithPath: Bundle.main.executablePath ?? CommandLine.arguments[0])
+                // Contents/MacOS/Lex -> deleting 2 levels -> Contents/
+                let contentsURL = execURL.deletingLastPathComponent().deletingLastPathComponent()
+                let resURL = contentsURL.appendingPathComponent("Resources/moe_zhuyin.json")
+                
+                if FileManager.default.fileExists(atPath: resURL.path) {
+                    data = try Data(contentsOf: resURL)
+                }
+            }
+            
+            // 3. Testing / development fallback: look relative to source file
+            if data == nil {
                 let testResURL = URL(fileURLWithPath: #file)
                     .deletingLastPathComponent()
                     .deletingLastPathComponent()
                     .appendingPathComponent("Resources/moe_zhuyin.json")
                 if FileManager.default.fileExists(atPath: testResURL.path) {
-                    let data = try Data(contentsOf: testResURL)
-                    self.dictionary = try JSONDecoder().decode([String: String].self, from: data)
-                } else {
-                    // Last resort: current working directory (make test copies Resources/)
-                    let cwdURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-                        .appendingPathComponent("Resources/moe_zhuyin.json")
-                    if FileManager.default.fileExists(atPath: cwdURL.path) {
-                        let data = try Data(contentsOf: cwdURL)
-                        self.dictionary = try JSONDecoder().decode([String: String].self, from: data)
-                    }
+                    data = try Data(contentsOf: testResURL)
                 }
+            }
+            
+            // 4. Last resort: current working directory (e.g., during 'make test')
+            if data == nil {
+                let cwdURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+                    .appendingPathComponent("Resources/moe_zhuyin.json")
+                if FileManager.default.fileExists(atPath: cwdURL.path) {
+                    data = try Data(contentsOf: cwdURL)
+                }
+            }
+            
+            if let jsonData = data {
+                self.dictionary = try JSONDecoder().decode([String: String].self, from: jsonData)
+                print("Successfully loaded Zhuyin dictionary with \(dictionary.count) entries.")
+            } else {
+                print("Critical error: Could not find moe_zhuyin.json in any location.")
             }
             
             // Calculate max word length for search optimization
             maxWordLength = dictionary.keys.reduce(1) { max($0, $1.count) }
         } catch {
-            print("Error loading moe_zhuyin.json: \(error)")
+            print("Error parsing moe_zhuyin.json: \(error)")
         }
     }
     
@@ -106,7 +124,16 @@ public class ZhuyinConverter {
                 // Try single character lookup
                 let charStr = String(ch)
                 if let zhuyin = dictionary[charStr] {
-                    result.append((charStr, zhuyin))
+                    // Disambiguation heuristic:
+                    // If the original input text is a multi-character string (sentence/phrase),
+                    // and we match a single character with multiple possible readings (" / "),
+                    // we pick only the first one (most common) to avoid showing slashes in context.
+                    if text.count > 1 && zhuyin.contains(" / ") {
+                        let primary = zhuyin.components(separatedBy: " / ").first ?? zhuyin
+                        result.append((charStr, primary))
+                    } else {
+                        result.append((charStr, zhuyin))
+                    }
                 } else {
                     // Not in MOE dictionary - return nil (no fallback)
                     result.append((charStr, nil))

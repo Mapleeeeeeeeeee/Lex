@@ -143,6 +143,12 @@ Tests/
 授權條款：[CC BY-ND 3.0 TW](https://creativecommons.org/licenses/by-nd/3.0/tw/)  
 著作權人：中華民國教育部
 
+### 🔠 多音字處理策略 (Disambiguation)
+Lex 採用「最長比對優先 (Longest Match)」加上「首選讀音啟發法 (Primary Reading Heuristic)」：
+- **詞條優先**：如「龜裂」在詞典中有獨立詞條，則精確顯示 `ㄐㄩㄣ ㄌㄧㄝˋ`。
+- **長句自動簡化**：在長句子中，若單個字有多個讀音（如「中」有 ㄓㄨㄥ/ㄓㄨㄥˋ），系統會根據教育部《一字多音審定表》自動選取第一順位讀音，避免斜線干擾閱讀。
+- **單字顯示全部**：若僅查詢單個字，則會列出所有可能的讀音。
+
 ## 📄 授權
 
 本專案採用 [Apache License 2.0](LICENSE) 授權。

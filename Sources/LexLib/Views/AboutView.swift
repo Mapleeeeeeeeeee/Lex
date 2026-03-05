@@ -16,15 +16,18 @@ public struct AboutView: View {
                 Text("Lex")
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                 
-                Text("v1.1.3")
+                Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0")")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
             
             VStack(spacing: 16) {
                 VStack(spacing: 6) {
-                    Text("💻 開發者 (Developer)")
-                        .font(.headline)
+                    HStack(spacing: 6) {
+                        Image(systemName: "laptopcomputer")
+                        Text("開發者 (Developer)")
+                    }
+                    .font(.headline)
                     Text("Maple Kuo")
                         .font(.body)
                     
@@ -40,8 +43,11 @@ public struct AboutView: View {
                     .padding(.horizontal, 40)
                 
                 VStack(spacing: 6) {
-                    Text("📚 注音資料來源")
-                        .font(.headline)
+                    HStack(spacing: 6) {
+                        Image(systemName: "books.vertical.fill")
+                        Text("注音資料來源")
+                    }
+                    .font(.headline)
                     Link("教育部《國語辭典簡編本》", destination: URL(string: "https://dict.concised.moe.edu.tw/")!)
                         .font(.body)
                     
@@ -56,10 +62,13 @@ public struct AboutView: View {
             }
             .padding(.top, 8)
             
-            Text("Made with ❤️ in Taiwan")
-                .font(.footnote)
-                .foregroundColor(Color.secondary.opacity(0.5))
-                .padding(.top, 16)
+            VStack(spacing: 4) {
+                Text("Made with ❤️ in Taiwan")
+                Link("Licensed under Apache License 2.0", destination: URL(string: "https://www.apache.org/licenses/LICENSE-2.0")!)
+            }
+            .font(.system(size: 9))
+            .foregroundColor(Color.secondary.opacity(0.5))
+            .padding(.top, 16)
         }
         .padding(40)
         .frame(width: 360)

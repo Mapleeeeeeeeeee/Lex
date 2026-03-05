@@ -76,18 +76,32 @@ public struct FloatingPanelView: View {
                                                  startPoint: .leading, endPoint: .trailing))
                             .frame(height: 1).padding(.horizontal, 14)
                     }
-                    VStack(alignment: .leading, spacing: 3) {
+                    VStack(alignment: .leading, spacing: 6) {
                         Text("注音")
                             .font(.system(size: 9, weight: .bold, design: .rounded))
                             .foregroundColor(Color.pink.opacity(0.6)).tracking(1.0)
-                        Text(viewModel.zhuyinText)
-                            .font(.system(size: 12, weight: .regular))
-                            .foregroundColor(.primary.opacity(0.6))
-                            .lineLimit(3)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .textSelection(.enabled)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 5) {
+                                ForEach(Array(viewModel.zhuyinText.components(separatedBy: " ").filter { !$0.isEmpty }.enumerated()), id: \.offset) { _, syllable in
+                                    Text(syllable)
+                                        .font(.system(size: 11, weight: .semibold, design: .rounded))
+                                        .padding(.horizontal, 7)
+                                        .padding(.vertical, 3)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 6)
+                                                .fill(Color.pink.opacity(0.08))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 6)
+                                                        .stroke(Color.pink.opacity(0.1), lineWidth: 0.5)
+                                                )
+                                        )
+                                        .foregroundColor(Color.pink.opacity(0.8))
+                                }
+                            }
+                        }
                     }
-                    .padding(.horizontal, 14).padding(.top, item.translatedText.isEmpty ? 8 : 6).padding(.bottom, 6)
+                    .padding(.horizontal, 14).padding(.top, item.translatedText.isEmpty ? 8 : 6).padding(.bottom, 8)
                     .transition(.opacity)
                 }
                 

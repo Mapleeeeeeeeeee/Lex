@@ -383,4 +383,6 @@ func runAllTests() {
     runTranslationServiceIntegrationTests()
     runTranslationProviderTests()
     runZhuyinTests()
+    runTranslationLogicTests()
+    runPolyphoneTests()
 }

@@ -2,8 +2,10 @@ APP_NAME=Lex
 APP_BUNDLE=$(APP_NAME).app
 MACOS_VERSION_MIN=13.0
 
-build:
-	@echo "Building $(APP_NAME)..."
+VERSION=$(shell ./get_version.sh)
+
+build: icon
+	@echo "Building $(APP_NAME) v$(VERSION)..."
 	@mkdir -p $(APP_BUNDLE)/Contents/MacOS
 	@mkdir -p $(APP_BUNDLE)/Contents/Resources
 	@cp -R Sources/LexLib/Resources/* $(APP_BUNDLE)/Contents/Resources/
@@ -14,8 +16,24 @@ build:
 		-o $(APP_BUNDLE)/Contents/MacOS/$(APP_NAME) \
 		-framework Cocoa -framework SwiftUI -framework Combine \
 		Sources/LexLib/**/*.swift Sources/LexApp/main.swift
-	@echo '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n\t<key>CFBundleExecutable</key>\n\t<string>$(APP_NAME)</string>\n\t<key>CFBundleIdentifier</key>\n\t<string>com.gemini.$(APP_NAME)</string>\n\t<key>CFBundlePackageType</key>\n\t<string>APPL</string>\n\t<key>LSUIElement</key>\n\t<string>YES</string>\n\t<key>CFBundleIconFile</key>\n\t<string>AppIcon</string>\n</dict>\n</plist>' > $(APP_BUNDLE)/Contents/Info.plist
+	@echo '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n\t<key>CFBundleExecutable</key>\n\t<string>$(APP_NAME)</string>\n\t<key>CFBundleIdentifier</key>\n\t<string>com.gemini.$(APP_NAME)</string>\n\t<key>CFBundlePackageType</key>\n\t<string>APPL</string>\n\t<key>LSUIElement</key>\n\t<string>YES</string>\n\t<key>CFBundleIconFile</key>\n\t<string>AppIcon</string>\n\t<key>CFBundleShortVersionString</key>\n\t<string>$(VERSION)</string>\n\t<key>CFBundleVersion</key>\n\t<string>$(VERSION)</string>\n</dict>\n</plist>' > $(APP_BUNDLE)/Contents/Info.plist
 	@echo "Build complete."
+
+icon:
+	@echo "Generating app icon..."
+	@mkdir -p Assets/AppIcon.iconset
+	@sips -z 16 16     Assets/icon.png --out Assets/AppIcon.iconset/icon_16x16.png > /dev/null
+	@sips -z 32 32     Assets/icon.png --out Assets/AppIcon.iconset/icon_16x16@2x.png > /dev/null
+	@sips -z 32 32     Assets/icon.png --out Assets/AppIcon.iconset/icon_32x32.png > /dev/null
+	@sips -z 64 64     Assets/icon.png --out Assets/AppIcon.iconset/icon_32x32@2x.png > /dev/null
+	@sips -z 128 128   Assets/icon.png --out Assets/AppIcon.iconset/icon_128x128.png > /dev/null
+	@sips -z 256 256   Assets/icon.png --out Assets/AppIcon.iconset/icon_128x128@2x.png > /dev/null
+	@sips -z 256 256   Assets/icon.png --out Assets/AppIcon.iconset/icon_256x256.png > /dev/null
+	@sips -z 512 512   Assets/icon.png --out Assets/AppIcon.iconset/icon_256x256@2x.png > /dev/null
+	@sips -z 512 512   Assets/icon.png --out Assets/AppIcon.iconset/icon_512x512.png > /dev/null
+	@sips -z 1024 1024 Assets/icon.png --out Assets/AppIcon.iconset/icon_512x512@2x.png > /dev/null
+	@iconutil -c icns Assets/AppIcon.iconset
+	@rm -rf Assets/AppIcon.iconset
 
 run: build
 	@echo "Running $(APP_NAME)..."

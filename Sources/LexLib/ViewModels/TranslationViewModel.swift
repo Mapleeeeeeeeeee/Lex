@@ -24,6 +24,14 @@ public class TranslationViewModel: ObservableObject {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         
+        func updateState(_ block: @escaping () -> Void) {
+            if Thread.isMainThread {
+                block()
+            } else {
+                DispatchQueue.main.async(execute: block)
+            }
+        }
+        
         // If input is Chinese, skip translation — show Zhuyin only
         if ZhuyinConverter.shared.containsChinese(trimmed) {
             let item = TranslationItem(
@@ -31,7 +39,7 @@ public class TranslationViewModel: ObservableObject {
                 translatedText: "",
                 isTranslating: false
             )
-            DispatchQueue.main.async {
+            updateState {
                 self.currentItem = item
                 self.showPanel = true
                 self.isSaved = self.vocabularyManager.isSaved(original: trimmed)
@@ -47,23 +55,19 @@ public class TranslationViewModel: ObservableObject {
             isTranslating: true
         )
         
-        DispatchQueue.main.async {
+        updateState {
             self.currentItem = newItem
             self.showPanel = true
             self.isSaved = self.vocabularyManager.isSaved(original: trimmed)
             self.showCopiedFeedback = false
             
             self.translationService.translate(text: trimmed) { [weak self] resultText in
-                DispatchQueue.main.async {
+                updateState {
                     if self?.currentItem?.id == newItem.id {
                         if let translated = resultText {
                             self?.currentItem?.translatedText = translated
-                            // Generate Zhuyin for Chinese translation result
-                            if ZhuyinConverter.shared.containsChinese(translated) {
-                                self?.zhuyinText = ZhuyinConverter.shared.getZhuyin(translated)
-                            } else {
-                                self?.zhuyinText = ""
-                            }
+                            // User requirement: English to TC should NOT show Zhuyin
+                            self?.zhuyinText = ""
                         } else {
                             self?.currentItem?.translatedText = "翻譯失敗，請檢查網路連線或稍後再試。"
                             self?.zhuyinText = ""
@@ -84,6 +88,33 @@ public class TranslationViewModel: ObservableObject {
     public func speakOriginal() {
         guard let text = currentItem?.originalText else { return }
         synthesizer.stopSpeaking()
+        
+        let voices = NSSpeechSynthesizer.availableVoices
+        if ZhuyinConverter.shared.containsChinese(text) {
+            // v1.1.8 Chinese solution: Priority: zh-TW (Taiwan), Meijia (Taiwan), then other Chinese variants
+            let zhVoice = voices.first { v in
+                let r = v.rawValue.lowercased()
+                return r.contains("zh-tw") || r.contains("zh_tw") || r.contains("meijia")
+            } ?? voices.first { v in
+                let r = v.rawValue.lowercased()
+                return r.contains("zh-hk") || r.contains("zh_hk") || r.contains("zh-cn") || r.contains("zh_cn") || r.contains("zh-") || r.contains("zh_") || r.contains("tingting")
+            }
+            
+            if let voice = zhVoice {
+                synthesizer.setVoice(voice)
+            }
+        } else {
+            // v1.1.5 English solution: Pick Samantha/Alex or match en_US underscore specifically to skip robotic en-US voices
+            if let enVoice = voices.first(where: { v in
+                let r = v.rawValue
+                return r.contains("en_US") || r.contains("Samantha") || r.contains("Alex")
+            }) {
+                synthesizer.setVoice(enVoice)
+            } else {
+                synthesizer.setVoice(nil)
+            }
+        }
+        
         synthesizer.startSpeaking(text)
     }
     
