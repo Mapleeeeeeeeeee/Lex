@@ -24,6 +24,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem!
     var vocabWindow: NSWindow?
     var vocabListVM = VocabularyListViewModel()
+    var aboutWindow: NSWindow?
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -166,40 +167,31 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc private func showAbout() {
-        let creditsHtml = """
-        <div style="text-align: center; font-family: -apple-system, sans-serif;">
-            <p><b>💻 開發者 (Developer)</b><br>
-            Maple Kuo</p>
-            <p>
-                <a href="https://www.facebook.com/profile.php?id=61585105004197">Facebook</a> | 
-                <a href="https://www.linkedin.com/in/maplekuo">LinkedIn</a> | 
-                <a href="https://github.com/Mapleeeeeeeeeee">GitHub</a>
-            </p>
-            <br>
-            <p><b>📚 注音資料來源 (Data Source)</b><br>
-            <a href="https://dict.concised.moe.edu.tw/">教育部《國語辭典簡編本》</a><br>
-            授權：<a href="https://creativecommons.org/licenses/by-nd/3.0/tw/">CC BY-ND 3.0 TW</a></p>
-        </div>
-        """
+        if let existing = aboutWindow, existing.isVisible {
+            existing.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
         
-        let data = creditsHtml.data(using: .utf8)!
-        let attrStr = try? NSAttributedString(
-            data: data,
-            options: [
-                .documentType: NSAttributedString.DocumentType.html,
-                .characterEncoding: String.Encoding.utf8.rawValue
-            ],
-            documentAttributes: nil
+        let view = AboutView()
+        
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 360, height: 440),
+            styleMask: [.titled, .closable, .fullSizeContentView],
+            backing: .buffered,
+            defer: false
         )
-        
-        let options: [NSApplication.AboutPanelOptionKey: Any] = [
-            .credits: attrStr ?? NSAttributedString(string: "Made with ❤️"),
-            .applicationName: "Lex",
-            .applicationVersion: "v1.0.0"
-        ]
+        window.titlebarAppearsTransparent = true
+        window.titleVisibility = .hidden
+        window.isMovableByWindowBackground = true
+        window.isReleasedWhenClosed = false
+        window.contentView = NSHostingView(rootView: view)
+        window.center()
+        window.makeKeyAndOrderFront(nil)
         
         NSApp.activate(ignoringOtherApps: true)
-        NSApplication.shared.orderFrontStandardAboutPanel(options: options)
+        
+        aboutWindow = window
     }
     
     @objc private func quitApp() {
