@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.9](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.1.8...v1.1.9) (2026-03-06)
+
+
+### Bug Fixes
+
+* resolve sparkle update size mismatch by fully automating release pipeline ([6760dfc](https://github.com/Mapleeeeeeeeeee/Lex/commit/6760dfce59c2b53b23741e41c275af642d30be36))
+
 ## [1.1.8] - 2026-03-06
 ### Fixed
 - 🌐 **Traditional Chinese Localization**: Configured `Info.plist` to correctly identify Lex as a Traditional Chinese app, enabling Sparkle's auto-update interface to display correctly in Chinese.
