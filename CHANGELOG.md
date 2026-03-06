@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.12](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.1.11...v1.1.12) (2026-03-06)
+
+
+### Bug Fixes
+
+* un-ignore and track Sparkle Updater.app previously blocked by .gitignore ([5a06f3f](https://github.com/Mapleeeeeeeeeee/Lex/commit/5a06f3fde60db4db7ec62038f8fd8019cf76f2ed))
+
 ## [1.1.11](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.1.10...v1.1.11) (2026-03-06)
 
 
