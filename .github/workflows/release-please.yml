@@ -35,6 +35,12 @@ jobs:
         run: |
           make build
           
+      - name: Debug Upload Lex.app
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-lex-app
+          path: Lex.app/
+          
       - name: Create ZIP Archive
         run: |
           make zip
