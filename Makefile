@@ -10,13 +10,17 @@ build: icon
 	@mkdir -p $(APP_BUNDLE)/Contents/Resources
 	@cp -R Sources/LexLib/Resources/* $(APP_BUNDLE)/Contents/Resources/
 	@cp Assets/AppIcon.icns $(APP_BUNDLE)/Contents/Resources/ 2>/dev/null || true
+	@mkdir -p $(APP_BUNDLE)/Contents/Frameworks
+	@cp -R Frameworks/Sparkle.framework $(APP_BUNDLE)/Contents/Frameworks/
 	@swiftc \
 		-parse-as-library \
 		-target $(shell uname -m)-apple-macosx$(MACOS_VERSION_MIN) \
 		-o $(APP_BUNDLE)/Contents/MacOS/$(APP_NAME) \
-		-framework Cocoa -framework SwiftUI -framework Combine \
+		-F Frameworks -framework Cocoa -framework SwiftUI -framework Combine -framework Sparkle \
 		Sources/LexLib/**/*.swift Sources/LexApp/main.swift
-	@echo '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n\t<key>CFBundleExecutable</key>\n\t<string>$(APP_NAME)</string>\n\t<key>CFBundleIdentifier</key>\n\t<string>com.gemini.$(APP_NAME)</string>\n\t<key>CFBundlePackageType</key>\n\t<string>APPL</string>\n\t<key>LSUIElement</key>\n\t<string>YES</string>\n\t<key>CFBundleIconFile</key>\n\t<string>AppIcon</string>\n\t<key>CFBundleShortVersionString</key>\n\t<string>$(VERSION)</string>\n\t<key>CFBundleVersion</key>\n\t<string>$(VERSION)</string>\n</dict>\n</plist>' > $(APP_BUNDLE)/Contents/Info.plist
+	@install_name_tool -add_rpath @executable_path/../Frameworks $(APP_BUNDLE)/Contents/MacOS/$(APP_NAME)
+	@echo '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n\t<key>CFBundleExecutable</key>\n\t<string>$(APP_NAME)</string>\n\t<key>CFBundleIdentifier</key>\n\t<string>com.gemini.$(APP_NAME)</string>\n\t<key>CFBundlePackageType</key>\n\t<string>APPL</string>\n\t<key>LSUIElement</key>\n\t<string>YES</string>\n\t<key>CFBundleIconFile</key>\n\t<string>AppIcon</string>\n\t<key>CFBundleShortVersionString</key>\n\t<string>$(VERSION)</string>\n\t<key>CFBundleVersion</key>\n\t<string>$(VERSION)</string>\n\t<key>SUFeedURL</key>\n\t<string>https://mapleeeeeeeeeee.github.io/Lex/appcast.xml</string>\n\t<key>SUPublicEDKey</key>\n\t<string>PfCyMfARoazOM+1dL7i7WcLtY+ba2Vp5QUouj+p5F3E=</string>\n</dict>\n</plist>' > $(APP_BUNDLE)/Contents/Info.plist
+	@codesign --force --deep --sign - $(APP_BUNDLE)
 	@echo "Build complete."
 
 icon:
@@ -46,9 +50,10 @@ test:
 	@swiftc \
 		-target $(shell uname -m)-apple-macosx$(MACOS_VERSION_MIN) \
 		-o test_runner \
-		-framework Cocoa -framework Combine \
+		-F Frameworks -framework Cocoa -framework Combine -framework Sparkle \
 		Sources/LexLib/**/*.swift \
 		Tests/*.swift
+	@install_name_tool -add_rpath @executable_path/Frameworks test_runner
 	@echo "Running tests..."
 	@./test_runner
 	@rm -f test_runner
@@ -71,3 +76,11 @@ dmg: build
 
 release: zip dmg
 	@echo "Release packages ready."
+
+appcast:
+	@echo "Generating appcast..."
+	@mkdir -p appcast_build
+	@cp Lex.dmg appcast_build/
+	@./Frameworks/bin/generate_appcast appcast_build/
+	@cp appcast_build/appcast.xml .
+	@rm -rf appcast_build

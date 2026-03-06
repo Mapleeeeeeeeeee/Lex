@@ -1,0 +1,14 @@
+<?xml version="1.0" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>Lex</title>
+        <item>
+            <title>1.1.6</title>
+            <pubDate>Fri, 06 Mar 2026 09:55:41 +0800</pubDate>
+            <sparkle:version>1.1.6</sparkle:version>
+            <sparkle:shortVersionString>1.1.6</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>10.13</sparkle:minimumSystemVersion>
+            <enclosure url="https://mapleeeeeeeeeee.github.io/Lex/Lex.dmg" length="4217675" type="application/octet-stream" sparkle:edSignature="nylwY5JjDOwc8NLw3Odqq/3rDSuO65xf5/Vxj+cfhQHlD5SFDZWncTq6ZVQnlLa1tme97YwBQf8jAQiwStsOAw=="/>
+        </item>
+    </channel>
+</rss>

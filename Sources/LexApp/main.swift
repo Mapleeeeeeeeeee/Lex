@@ -1,6 +1,7 @@
 import SwiftUI
 import Combine
 import ServiceManagement
+import Sparkle
 
 @main
 struct LexApp: App {
@@ -25,12 +26,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var vocabWindow: NSWindow?
     var vocabListVM = VocabularyListViewModel()
     var aboutWindow: NSWindow?
+    var updaterController: SPUStandardUpdaterController!
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
         
         // Setup AppController
         AppController.shared.viewModel = viewModel
+        
+        // Setup Auto-Updater
+        updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
         
         // Initial accessibility check
         if !AXIsProcessTrusted() {
@@ -134,12 +139,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         aboutItem.target = self
         menu.addItem(aboutItem)
         
+        let updateItem = NSMenuItem(title: "檢查更新...", action: #selector(checkForUpdates), keyEquivalent: "")
+        updateItem.image = NSImage(systemSymbolName: "arrow.triangle.2.circlepath", accessibilityDescription: nil)
+        updateItem.target = self
+        menu.addItem(updateItem)
+        
         let quitItem = NSMenuItem(title: "結束", action: #selector(quitApp), keyEquivalent: "q")
         quitItem.image = NSImage(systemSymbolName: "power", accessibilityDescription: nil)
         quitItem.target = self
         menu.addItem(quitItem)
         
         statusItem.menu = menu
+    }
+    
+    @objc private func checkForUpdates() {
+        updaterController.checkForUpdates(nil)
     }
     
     @objc private func openVocabularyWindow() {

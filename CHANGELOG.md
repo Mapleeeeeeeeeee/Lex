@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.6] - 2026-03-06
+### Added
+- 🔄 **Sparkle Auto-Update Integration**: Lex now automatically checks for updates and handles seamless, secure downloads via GitHub Releases without needing manual `.dmg` re-installation!
+
 ## [1.1.5] - 2026-03-06
 ### Added
 - 🔊 **English Phonetic Symbols (IPA)**: Display standard pronunciation brackets underneath the original text when querying English words.
