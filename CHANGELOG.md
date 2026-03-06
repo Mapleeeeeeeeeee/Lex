@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.16](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.1.15...v1.1.16) (2026-03-06)
+
+
+### Bug Fixes
+
+* unify app icon assets ([c0881cb](https://github.com/Mapleeeeeeeeeee/Lex/commit/c0881cb8a13a9e36d6bafcb747e751e32866e235))
+
 ## [1.1.16] - 2026-03-06
 
 ### Fixed
