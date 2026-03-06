@@ -7,11 +7,11 @@ VERSION=$(shell ./get_version.sh)
 build: icon
 	@echo "Building $(APP_NAME) v$(VERSION)..."
 	@mkdir -p $(APP_BUNDLE)/Contents/MacOS
-	@mkdir -p $(APP_BUNDLE)/Contents/Resources
+	@mkdir -p $(APP_BUNDLE)/Contents/Resources/zh_TW.lproj
 	@cp -R Sources/LexLib/Resources/* $(APP_BUNDLE)/Contents/Resources/
 	@cp Assets/AppIcon.icns $(APP_BUNDLE)/Contents/Resources/ 2>/dev/null || true
 	@mkdir -p $(APP_BUNDLE)/Contents/Frameworks
-	@cp -R Frameworks/Sparkle.framework $(APP_BUNDLE)/Contents/Frameworks/
+	@cp -a Frameworks/Sparkle.framework $(APP_BUNDLE)/Contents/Frameworks/
 	@swiftc \
 		-parse-as-library \
 		-target $(shell uname -m)-apple-macosx$(MACOS_VERSION_MIN) \
@@ -69,7 +69,7 @@ zip: build
 dmg: build
 	@echo "Packaging DMG..."
 	@mkdir -p build_dmg
-	@cp -R Lex.app build_dmg/
+	@cp -a Lex.app build_dmg/
 	@ln -s /Applications build_dmg/Applications
 	@hdiutil create -volname "$(APP_NAME)" -srcfolder build_dmg -ov -format UDZO $(APP_NAME).dmg
 	@rm -rf build_dmg
