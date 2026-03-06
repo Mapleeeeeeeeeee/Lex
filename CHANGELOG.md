@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.11](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.1.10...v1.1.11) (2026-03-06)
+
+
+### Bug Fixes
+
+* preserve sparkle framework symlinks with cp -a and add zh_TW.lproj to bundle to fix english ui ([736b028](https://github.com/Mapleeeeeeeeeee/Lex/commit/736b0282eed91373e4b6a4e3b2a608e8d653969e))
+
 ## [1.1.10](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.1.9...v1.1.10) (2026-03-06)
 
 
