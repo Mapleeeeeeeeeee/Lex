@@ -1,5 +1,6 @@
 # Build artifacts
 *.app/
+!Frameworks/**/*.app/
 *.o
 *.swp
 test_runner
