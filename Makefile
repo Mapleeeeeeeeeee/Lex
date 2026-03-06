@@ -81,7 +81,11 @@ appcast:
 	@echo "Generating appcast..."
 	@mkdir -p appcast_build
 	@cp Lex.dmg appcast_build/
-	@./Frameworks/bin/generate_appcast appcast_build/
+	@if [ -n "$$SPARKLE_PRIVATE_KEY" ]; then \
+		echo "$$SPARKLE_PRIVATE_KEY" | ./Frameworks/bin/generate_appcast appcast_build/ --ed-key-file -; \
+	else \
+		./Frameworks/bin/generate_appcast appcast_build/; \
+	fi
 	@mkdir -p docs
 	@cp appcast_build/appcast.xml docs/
 	@sed -i '' 's|https://mapleeeeeeeeeee.github.io/Lex/Lex.dmg|https://github.com/Mapleeeeeeeeeee/Lex/releases/download/v$(VERSION)/Lex.dmg|g' docs/appcast.xml
