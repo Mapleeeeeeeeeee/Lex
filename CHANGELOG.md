@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.8] - 2026-03-06
+### Fixed
+- 🌐 **Traditional Chinese Localization**: Configured `Info.plist` to correctly identify Lex as a Traditional Chinese app, enabling Sparkle's auto-update interface to display correctly in Chinese.
+- 🔗 **Update Download URL**: Fixed an issue where Sparkle couldn't download the update because the feed URL incorrectly pointed to GitHub Pages rather than the actual GitHub Releases repository limit.
+
 ## [1.1.7] - 2026-03-06
 ### Fixed
 - 🛠️ **Accessibility Permission Workflow**: Improved the startup dialog and added a "Check Accessibility Permission..." menu item, allowing users to troubleshoot translation hotkey issues without restarting Lex.
