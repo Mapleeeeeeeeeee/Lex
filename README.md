@@ -36,6 +36,7 @@
    xattr -cr /Applications/Lex.app
    ```
    執行後即可正常開啟。
+4. **⚠️ 舊版升級限制：** 如果您安裝的是早期版本，且內建更新出現 installer 或 download 錯誤，請先手動安裝一次最新官方 release。完成這次手動重裝後，後續版本才會恢復自動更新。
 
 ### 開發者（從原始碼編譯）
 
@@ -47,6 +48,8 @@ cd Lex
 make build
 make run
 ```
+
+從原始碼自行編譯的 build 不在官方自動更新支援範圍內。Sparkle 更新流程只保證從 GitHub Releases 下載的官方 `Lex.dmg` / `Lex.app.zip`。
 
 ### 必須的系統權限
 

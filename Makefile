@@ -1,11 +1,13 @@
 APP_NAME=Lex
 APP_BUNDLE=$(APP_NAME).app
 MACOS_VERSION_MIN=13.0
+SIGN_IDENTITY ?= -
 
 VERSION=$(shell ./get_version.sh)
 
-build: icon
+build:
 	@echo "Building $(APP_NAME) v$(VERSION)..."
+	@[ -f Assets/AppIcon.icns ] || { echo "Missing Assets/AppIcon.icns. Run 'make icon' after preparing a 1024x1024 source image."; exit 1; }
 	@mkdir -p $(APP_BUNDLE)/Contents/MacOS
 	@mkdir -p $(APP_BUNDLE)/Contents/Resources/zh_TW.lproj
 	@cp -R Sources/LexLib/Resources/* $(APP_BUNDLE)/Contents/Resources/
@@ -20,11 +22,17 @@ build: icon
 		Sources/LexLib/**/*.swift Sources/LexApp/main.swift
 	@install_name_tool -add_rpath @executable_path/../Frameworks $(APP_BUNDLE)/Contents/MacOS/$(APP_NAME)
 	@echo '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n\t<key>CFBundleDevelopmentRegion</key>\n\t<string>zh_TW</string>\n\t<key>CFBundleLocalizations</key>\n\t<array>\n\t\t<string>zh_TW</string>\n\t</array>\n\t<key>CFBundleExecutable</key>\n\t<string>$(APP_NAME)</string>\n\t<key>CFBundleIdentifier</key>\n\t<string>com.gemini.$(APP_NAME)</string>\n\t<key>CFBundlePackageType</key>\n\t<string>APPL</string>\n\t<key>LSUIElement</key>\n\t<string>YES</string>\n\t<key>CFBundleIconFile</key>\n\t<string>AppIcon</string>\n\t<key>CFBundleShortVersionString</key>\n\t<string>$(VERSION)</string>\n\t<key>CFBundleVersion</key>\n\t<string>$(VERSION)</string>\n\t<key>SUFeedURL</key>\n\t<string>https://mapleeeeeeeeeee.github.io/Lex/appcast.xml</string>\n\t<key>SUPublicEDKey</key>\n\t<string>PfCyMfARoazOM+1dL7i7WcLtY+ba2Vp5QUouj+p5F3E=</string>\n</dict>\n</plist>' > $(APP_BUNDLE)/Contents/Info.plist
-	@codesign --force --deep --sign - $(APP_BUNDLE)
+	@./Scripts/sparkle_bundle.sh sign $(APP_BUNDLE) "$(SIGN_IDENTITY)"
+	@./Scripts/sparkle_bundle.sh verify $(APP_BUNDLE)
 	@echo "Build complete."
 
 icon:
 	@echo "Generating app icon..."
+	@ICON_SIZE=$$(sips -g pixelWidth -g pixelHeight Assets/icon.png | awk '/pixelWidth|pixelHeight/ { print $$2 }' | sort -n | head -n 1); \
+	if [ "$$ICON_SIZE" -lt 1024 ]; then \
+		echo "Assets/icon.png must be at least 1024x1024 to regenerate AppIcon.icns."; \
+		exit 1; \
+	fi
 	@mkdir -p Assets/AppIcon.iconset
 	@sips -z 16 16     Assets/icon.png --out Assets/AppIcon.iconset/icon_16x16.png > /dev/null
 	@sips -z 32 32     Assets/icon.png --out Assets/AppIcon.iconset/icon_16x16@2x.png > /dev/null
@@ -57,6 +65,9 @@ test:
 	@echo "Running tests..."
 	@./test_runner
 	@rm -f test_runner
+
+verify-sparkle:
+	@./Scripts/sparkle_bundle.sh verify $(APP_BUNDLE)
 
 clean:
 	@rm -rf $(APP_BUNDLE) .build Lex.dmg Lex.app.zip

@@ -12,6 +12,7 @@ make test
 # 2. Build Release Assets (.dmg and .zip)
 echo "📦 Building Release Assets..."
 make release
+make verify-sparkle
 
 # 3. Generate Appcast (Sparkle Auto-Update Feed)
 echo "✨ Generating Appcast..."

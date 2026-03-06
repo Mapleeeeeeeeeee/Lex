@@ -37,6 +37,7 @@
    xattr -cr /Applications/Lex.app
    ```
    After running this command, you can open the app normally.
+4. **⚠️ Legacy upgrade limitation:** If you installed an early build and Sparkle reports an installer or download error, manually install the latest official release once. Automatic updates resume only after that one-time reinstall.
 
 ### Developers (Build from Source)
 
@@ -48,6 +49,8 @@ cd Lex
 make build
 make run
 ```
+
+Source builds are not part of the supported auto-update path. Sparkle updates are only guaranteed for the official `Lex.dmg` / `Lex.app.zip` published on GitHub Releases.
 
 ### Required System Permissions
 

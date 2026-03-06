@@ -15,5 +15,8 @@ jobs:
       - name: Build
         run: make build
 
+      - name: Verify Sparkle Bundle
+        run: make verify-sparkle
+
       - name: Test
         run: make test

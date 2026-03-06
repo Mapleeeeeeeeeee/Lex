@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.14] - 2026-03-06
+
+### Fixed
+
+* 修正 Sparkle nested helper 的簽章與驗證流程，避免自動更新卡在 installer 啟動階段
+* 明確定義官方 release 的自動更新支援路徑，並補充舊版需手動重裝一次的升級說明
+
 ## [1.1.13](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.1.12...v1.1.13) (2026-03-06)
 
 

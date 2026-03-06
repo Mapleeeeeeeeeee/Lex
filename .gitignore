@@ -37,3 +37,11 @@ Scripts/moedict/
 Scripts/node_modules/
 testZhuyin.swift
 testZhuyin2.swift
+Lex.dmg
+Lex.app.zip
+test_appcast/
+test_git_checkout/
+test_bundle
+test_bundle.swift
+Frameworks/sparkle.app/
+Frameworks/Sparkle Test App.app/
