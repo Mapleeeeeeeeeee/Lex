@@ -7,7 +7,7 @@ VERSION=$(shell ./get_version.sh)
 
 build:
 	@echo "Building $(APP_NAME) v$(VERSION)..."
-	@[ -f Assets/AppIcon.icns ] || { echo "Missing Assets/AppIcon.icns. Run 'make icon' after preparing a 1024x1024 source image."; exit 1; }
+	@[ -f Assets/AppIcon.icns ] || { echo "Missing Assets/AppIcon.icns."; exit 1; }
 	@mkdir -p $(APP_BUNDLE)/Contents/MacOS
 	@mkdir -p $(APP_BUNDLE)/Contents/Resources/zh_TW.lproj
 	@cp -R Sources/LexLib/Resources/* $(APP_BUNDLE)/Contents/Resources/
@@ -27,24 +27,11 @@ build:
 	@echo "Build complete."
 
 icon:
-	@echo "Generating app icon..."
-	@ICON_SIZE=$$(sips -g pixelWidth -g pixelHeight Assets/icon.png | awk '/pixelWidth|pixelHeight/ { print $$2 }' | sort -n | head -n 1); \
-	if [ "$$ICON_SIZE" -lt 1024 ]; then \
-		echo "Assets/icon.png must be at least 1024x1024 to regenerate AppIcon.icns."; \
-		exit 1; \
-	fi
-	@mkdir -p Assets/AppIcon.iconset
-	@sips -z 16 16     Assets/icon.png --out Assets/AppIcon.iconset/icon_16x16.png > /dev/null
-	@sips -z 32 32     Assets/icon.png --out Assets/AppIcon.iconset/icon_16x16@2x.png > /dev/null
-	@sips -z 32 32     Assets/icon.png --out Assets/AppIcon.iconset/icon_32x32.png > /dev/null
-	@sips -z 64 64     Assets/icon.png --out Assets/AppIcon.iconset/icon_32x32@2x.png > /dev/null
-	@sips -z 128 128   Assets/icon.png --out Assets/AppIcon.iconset/icon_128x128.png > /dev/null
-	@sips -z 256 256   Assets/icon.png --out Assets/AppIcon.iconset/icon_128x128@2x.png > /dev/null
-	@sips -z 256 256   Assets/icon.png --out Assets/AppIcon.iconset/icon_256x256.png > /dev/null
-	@sips -z 512 512   Assets/icon.png --out Assets/AppIcon.iconset/icon_256x256@2x.png > /dev/null
-	@sips -z 512 512   Assets/icon.png --out Assets/AppIcon.iconset/icon_512x512.png > /dev/null
-	@sips -z 1024 1024 Assets/icon.png --out Assets/AppIcon.iconset/icon_512x512@2x.png > /dev/null
-	@iconutil -c icns Assets/AppIcon.iconset
+	@echo "Syncing README icon preview from AppIcon.icns..."
+	@[ -f Assets/AppIcon.icns ] || { echo "Missing Assets/AppIcon.icns."; exit 1; }
+	@rm -rf Assets/AppIcon.iconset
+	@iconutil --convert iconset --output Assets/AppIcon.iconset Assets/AppIcon.icns
+	@cp Assets/AppIcon.iconset/icon_512x512@2x.png Assets/icon.png
 	@rm -rf Assets/AppIcon.iconset
 
 run: build

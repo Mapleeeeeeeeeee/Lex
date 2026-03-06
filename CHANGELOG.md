@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.16] - 2026-03-06
+
+### Fixed
+
+* 統一 README 預覽圖與 App / About 使用同一套 AppIcon 圖示來源
+
 ## [1.1.15] - 2026-03-06
 
 ### Fixed
