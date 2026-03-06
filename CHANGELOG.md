@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.10](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.1.9...v1.1.10) (2026-03-06)
+
+
+### Bug Fixes
+
+* orchestrate macos build and appcast generation natively inside release-please workflow ([23e8713](https://github.com/Mapleeeeeeeeeee/Lex/commit/23e8713a10d194c2497d56601b3c5cc244fe36b9))
+
 ## [1.1.9](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.1.8...v1.1.9) (2026-03-06)
 
 
