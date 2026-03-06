@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.7] - 2026-03-06
+### Fixed
+- 🛠️ **Accessibility Permission Workflow**: Improved the startup dialog and added a "Check Accessibility Permission..." menu item, allowing users to troubleshoot translation hotkey issues without restarting Lex.
+
 ## [1.1.6] - 2026-03-06
 ### Added
 - 🔄 **Sparkle Auto-Update Integration**: Lex now automatically checks for updates and handles seamless, secure downloads via GitHub Releases without needing manual `.dmg` re-installation!
