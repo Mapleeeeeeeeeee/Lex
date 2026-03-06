@@ -41,7 +41,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if !AXIsProcessTrusted() {
             let alert = NSAlert()
             alert.messageText = "需要輔助使用權限"
-            alert.informativeText = "Lex 需要「輔助使用」權限才能偵測您的 Command 鍵雙擊動作並取得選取文字。\n\n請在系統設定中授予 Lex 權限。"
+            alert.informativeText = "Lex 需要「輔助使用」權限才能偵測您的 Command 鍵雙擊動作並取得選取文字。\n\n📌 如果您已經打勾卻依然看到此訊息（常見於重新編譯或更新後），請嘗試：\n1. 選擇 Lex 並點擊下方的「-」號將其移除。\n2. 重新啟用或將 Lex 加回清單中。\n\n完成後，您可以點擊 Lex 選單列的「檢查輔助使用權限...」，無須重啟開發工具！"
             alert.alertStyle = .warning
             alert.addButton(withTitle: "前往設定")
             alert.addButton(withTitle: "稍後再說")
@@ -134,6 +134,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         menu.addItem(NSMenuItem.separator())
         
+        let permissionItem = NSMenuItem(title: "檢查輔助使用權限...", action: #selector(checkAccessibility), keyEquivalent: "p")
+        permissionItem.image = NSImage(systemSymbolName: "lock.shield", accessibilityDescription: nil)
+        permissionItem.target = self
+        menu.addItem(permissionItem)
+        
+        menu.addItem(NSMenuItem.separator())
+        
         let aboutItem = NSMenuItem(title: "關於 Lex", action: #selector(showAbout), keyEquivalent: "")
         aboutItem.image = NSImage(systemSymbolName: "info.circle", accessibilityDescription: nil)
         aboutItem.target = self
@@ -154,6 +161,31 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @objc private func checkForUpdates() {
         updaterController.checkForUpdates(nil)
+    }
+    
+    @objc private func checkAccessibility() {
+        if AXIsProcessTrusted() {
+            if AppController.shared.startListening() {
+                let alert = NSAlert()
+                alert.messageText = "權限設定成功"
+                alert.informativeText = "Lex 已成功取得輔助使用權限，快捷鍵 (雙擊 Command) 已啟用！"
+                alert.alertStyle = .informational
+                alert.addButton(withTitle: "確定")
+                alert.runModal()
+            }
+        } else {
+            let alert = NSAlert()
+            alert.messageText = "尚未取得權限"
+            alert.informativeText = "系統仍未授予 Lex 權限。\n\n若是權限已經勾選但無效：\n請點擊「前往設定」，選擇 Lex 後點擊「-」移除，再重新勾選或加入 Lex。\n完成後再點擊一次這個檢查按鈕。"
+            alert.alertStyle = .warning
+            alert.addButton(withTitle: "前往設定")
+            alert.addButton(withTitle: "確定")
+            if alert.runModal() == .alertFirstButtonReturn {
+                if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") {
+                    NSWorkspace.shared.open(url)
+                }
+            }
+        }
     }
     
     @objc private func openVocabularyWindow() {

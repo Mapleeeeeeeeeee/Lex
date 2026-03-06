@@ -13,7 +13,9 @@ public class AppController {
     
     public init() {}
     
-    public func startListening() {
+    public func startListening() -> Bool {
+        if eventTap != nil { return true }
+        
         // Check for accessibility permissions
         let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
         let accessEnabled = AXIsProcessTrustedWithOptions(options)
@@ -22,7 +24,7 @@ public class AppController {
             print("WARNING: Accessibility permissions are not enabled. The app cannot listen for global hotkeys.")
             // The call above with prompt: true already triggers the system security dialog.
             // But we can also show our own alert if needed.
-            return
+            return false
         }
         
         let eventMask = (1 << CGEventType.flagsChanged.rawValue)
@@ -45,7 +47,7 @@ public class AppController {
             userInfo: ptr
         ) else {
             print("Failed to create event tap! Accessibility permissions might be missing.")
-            return
+            return false
         }
         
         self.eventTap = tap
@@ -54,6 +56,7 @@ public class AppController {
         
         CFRunLoopAddSource(CFRunLoopGetCurrent(), rlSource, .commonModes)
         CGEvent.tapEnable(tap: tap, enable: true)
+        return true
     }
     
     private func handleFlagsChanged(event: CGEvent) {
