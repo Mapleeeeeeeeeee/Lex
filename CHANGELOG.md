@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.13](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.1.12...v1.1.13) (2026-03-06)
+
+
+### Bug Fixes
+
+* explicit empty trigger for debug release ([b3291b9](https://github.com/Mapleeeeeeeeeee/Lex/commit/b3291b9d25d210db382eab91236a22d9819f95bc))
+
 ## [1.1.12](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.1.11...v1.1.12) (2026-03-06)
 
 
