@@ -82,5 +82,6 @@ appcast:
 	@mkdir -p appcast_build
 	@cp Lex.dmg appcast_build/
 	@./Frameworks/bin/generate_appcast appcast_build/
-	@cp appcast_build/appcast.xml .
+	@mkdir -p docs
+	@cp appcast_build/appcast.xml docs/
 	@rm -rf appcast_build
