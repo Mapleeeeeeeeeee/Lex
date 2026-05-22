@@ -10,155 +10,119 @@ public struct FloatingPanelView: View {
     public var body: some View {
         VStack(spacing: 0) {
             if let item = viewModel.currentItem {
-                HStack {
-                    Text("翻譯")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundColor(.secondary)
-                    Spacer()
-                    HStack(spacing: 8) {
-                        ToolbarButton(icon: "speaker.wave.2.fill", tooltip: "朗讀原文",
-                                      action: { viewModel.speakOriginal() })
-                        ToolbarButton(icon: viewModel.showCopiedFeedback ? "checkmark" : "doc.on.doc",
-                                      tooltip: "複製翻譯", action: { viewModel.copyTranslation() })
-                        ToolbarButton(icon: viewModel.isSaved ? "bookmark.fill" : "bookmark",
-                                      tooltip: viewModel.isSaved ? "取消收藏" : "加入收藏",
-                                      isActive: viewModel.isSaved, action: { viewModel.toggleSaved() })
-                    }
-                }
-                .padding(.horizontal, 14).padding(.top, 10).padding(.bottom, 6)
-                
-                Divider().padding(.horizontal, 10)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("ORIGINAL")
-                        .font(.system(size: 9, weight: .bold, design: .rounded))
-                        .foregroundColor(Color.blue.opacity(0.6)).tracking(1.0)
-                    Text(item.originalText)
-                        .font(.system(size: 13, weight: .regular))
-                        .foregroundColor(.primary.opacity(0.8))
-                        .lineLimit(4).multilineTextAlignment(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .textSelection(.enabled)
-                        
-                    if let phonetics = item.phonetics, !phonetics.isEmpty {
-                        Text("[\(phonetics)]")
-                            .font(.system(size: 11, weight: .regular, design: .rounded))
-                            .foregroundColor(.secondary.opacity(0.8))
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                }
-                .padding(.horizontal, 14).padding(.top, 10).padding(.bottom, 8)
-                
-                // Show translation section only if there's a translation (not Chinese-only mode)
+                // Translation result (primary focus)
                 if !item.translatedText.isEmpty {
-                    Rectangle()
-                        .fill(LinearGradient(colors: [Color.blue.opacity(0.3), Color.purple.opacity(0.3)],
-                                             startPoint: .leading, endPoint: .trailing))
-                        .frame(height: 1).padding(.horizontal, 14)
-                    
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("翻譯結果")
-                            .font(.system(size: 9, weight: .bold, design: .rounded))
-                            .foregroundColor(Color.purple.opacity(0.6)).tracking(1.0)
+                    HStack(alignment: .top) {
                         HStack(alignment: .top, spacing: 6) {
                             if item.isTranslating {
-                                ProgressView().scaleEffect(0.6).frame(width: 14, height: 14)
+                                ProgressView().scaleEffect(0.6).frame(width: 14, height: 14).padding(.top, 2)
                             }
                             Text(item.translatedText)
-                                .font(.system(size: 14, weight: .medium))
+                                .font(.system(size: 20, weight: .semibold))
                                 .foregroundColor(.primary)
-                                .lineLimit(6).multilineTextAlignment(.leading)
-                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .lineLimit(4).multilineTextAlignment(.leading)
                                 .textSelection(.enabled)
                         }
+                        Spacer(minLength: 4)
+                        actionToolbar()
                     }
-                    .padding(.horizontal, 14).padding(.top, 8).padding(.bottom, 6)
+                    .padding(.horizontal, 14).padding(.top, 12).padding(.bottom, 4)
+
+                    // Original text + phonetics (secondary context)
+                    HStack(spacing: 4) {
+                        Text(item.originalText)
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundColor(.secondary)
+                            .lineLimit(2)
+                            .layoutPriority(1)
+                            .textSelection(.enabled)
+                        if let phonetics = item.phonetics, !phonetics.isEmpty {
+                            Text("/\(phonetics)/")
+                                .font(.system(size: 11, weight: .regular, design: .rounded))
+                                .foregroundColor(.secondary.opacity(0.6))
+                                .lineLimit(1)
+                        }
+                        Spacer()
+                    }
+                    .padding(.horizontal, 14).padding(.bottom, 8)
+                } else {
+                    HStack(alignment: .top) {
+                        Text(item.originalText)
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundColor(.primary)
+                            .lineLimit(4)
+                            .textSelection(.enabled)
+                        Spacer(minLength: 4)
+                        actionToolbar()
+                    }
+                    .padding(.horizontal, 14).padding(.top, 12).padding(.bottom, 8)
                 }
-                
+
+                // Part-of-speech definitions
                 if !item.definitions.isEmpty {
-                    Rectangle()
-                        .fill(LinearGradient(colors: [Color.purple.opacity(0.2), Color.blue.opacity(0.2)],
-                                             startPoint: .leading, endPoint: .trailing))
-                        .frame(height: 1).padding(.horizontal, 14)
-                    
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("詞性")
-                            .font(.system(size: 9, weight: .bold, design: .rounded))
-                            .foregroundColor(Color.blue.opacity(0.65)).tracking(1.0)
-                        
-                        VStack(alignment: .leading, spacing: 5) {
-                            ForEach(Array(item.definitions.enumerated()), id: \.offset) { _, definition in
-                                HStack(alignment: .firstTextBaseline, spacing: 8) {
-                                    Text(partOfSpeechLabel(definition.partOfSpeech, sourceWord: definition.sourceWord))
-                                        .font(.system(size: 10, weight: .semibold))
-                                        .foregroundColor(.secondary)
-                                        .frame(width: 78, alignment: .leading)
-                                    
-                                    Text(definition.translations.joined(separator: "、"))
-                                        .font(.system(size: 12, weight: .regular))
-                                        .foregroundColor(.primary.opacity(0.9))
-                                        .lineLimit(2)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .textSelection(.enabled)
-                                }
+                    Divider().padding(.horizontal, 12).opacity(0.5)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        ForEach(Array(item.definitions.enumerated()), id: \.offset) { _, definition in
+                            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                                Text(partOfSpeechAbbr(definition.partOfSpeech, sourceWord: definition.sourceWord))
+                                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                                    .foregroundColor(.blue.opacity(0.7))
+                                    .frame(minWidth: 24, alignment: .leading)
+
+                                Text(definition.translations.joined(separator: "、"))
+                                    .font(.system(size: 12, weight: .regular))
+                                    .foregroundColor(.primary.opacity(0.85))
+                                    .lineLimit(2)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .textSelection(.enabled)
                             }
                         }
                     }
                     .padding(.horizontal, 14).padding(.top, 8).padding(.bottom, 6)
                 }
-                
+
                 // Zhuyin annotation (only for Chinese text)
                 if !viewModel.zhuyinText.isEmpty {
-                    if !item.translatedText.isEmpty {
-                        Rectangle()
-                            .fill(LinearGradient(colors: [Color.purple.opacity(0.2), Color.pink.opacity(0.2)],
-                                                 startPoint: .leading, endPoint: .trailing))
-                            .frame(height: 1).padding(.horizontal, 14)
-                    }
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("注音")
-                            .font(.system(size: 9, weight: .bold, design: .rounded))
-                            .foregroundColor(Color.pink.opacity(0.6)).tracking(1.0)
-                        
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 5) {
-                                ForEach(Array(viewModel.zhuyinText.components(separatedBy: " ").filter { !$0.isEmpty }.enumerated()), id: \.offset) { _, syllable in
-                                    Text(syllable)
-                                        .font(.system(size: 11, weight: .semibold, design: .rounded))
-                                        .padding(.horizontal, 7)
-                                        .padding(.vertical, 3)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 6)
-                                                .fill(Color.pink.opacity(0.08))
-                                                .overlay(
-                                                    RoundedRectangle(cornerRadius: 6)
-                                                        .stroke(Color.pink.opacity(0.1), lineWidth: 0.5)
-                                                )
-                                        )
-                                        .foregroundColor(Color.pink.opacity(0.8))
-                                }
+                    Divider().padding(.horizontal, 12).opacity(0.5)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 5) {
+                            ForEach(Array(viewModel.zhuyinText.components(separatedBy: " ").filter { !$0.isEmpty }.enumerated()), id: \.offset) { _, syllable in
+                                Text(syllable)
+                                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                                    .padding(.horizontal, 7)
+                                    .padding(.vertical, 3)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 6)
+                                            .fill(Color.pink.opacity(0.08))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 6)
+                                                    .stroke(Color.pink.opacity(0.1), lineWidth: 0.5)
+                                            )
+                                    )
+                                    .foregroundColor(Color.pink.opacity(0.8))
                             }
                         }
                     }
-                    .padding(.horizontal, 14).padding(.top, item.translatedText.isEmpty ? 8 : 6).padding(.bottom, 8)
-                    .transition(.opacity)
+                    .padding(.horizontal, 14).padding(.vertical, 8)
                 }
-                
-                // Provider attribution (only when translation API was used)
+
+                // Footer
                 if !item.translatedText.isEmpty {
                     Text("via \(viewModel.providerName)")
                         .font(.system(size: 9, weight: .regular))
-                        .foregroundColor(.secondary.opacity(0.5))
+                        .foregroundColor(.secondary.opacity(0.4))
                         .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding(.horizontal, 14).padding(.bottom, 10)
+                        .padding(.horizontal, 14).padding(.bottom, 8)
                 } else {
-                    Spacer().frame(height: 6)
+                    Spacer().frame(height: 4)
                 }
-                
+
                 if viewModel.showCopiedFeedback {
                     HStack(spacing: 4) {
                         Image(systemName: "checkmark.circle.fill").font(.system(size: 10))
-                        Text("已複製到剪貼簿").font(.system(size: 10, weight: .medium))
+                        Text("已複製").font(.system(size: 10, weight: .medium))
                     }
                     .foregroundColor(.green)
                     .padding(.horizontal, 10).padding(.vertical, 4)
@@ -186,34 +150,36 @@ public struct FloatingPanelView: View {
         .animation(.easeInOut(duration: 0.2), value: viewModel.isSaved)
     }
     
-    private func partOfSpeechLabel(_ partOfSpeech: String, sourceWord: String?) -> String {
-        let label: String
+    private func partOfSpeechAbbr(_ partOfSpeech: String, sourceWord: String?) -> String {
+        let abbr: String
         switch partOfSpeech.lowercased() {
-        case "noun":
-            label = "名詞"
-        case "verb":
-            label = "動詞"
-        case "adjective":
-            label = "形容詞"
-        case "adverb":
-            label = "副詞"
-        case "pronoun":
-            label = "代名詞"
-        case "preposition":
-            label = "介系詞"
-        case "conjunction":
-            label = "連接詞"
-        case "interjection":
-            label = "感嘆詞"
-        default:
-            label = partOfSpeech
+        case "noun", "名詞":       abbr = "名"
+        case "verb", "動詞":       abbr = "動"
+        case "adjective", "形容詞": abbr = "形"
+        case "adverb", "副詞":     abbr = "副"
+        case "pronoun", "代名詞":   abbr = "代"
+        case "preposition", "介系詞": abbr = "介"
+        case "conjunction", "連接詞": abbr = "連"
+        case "interjection", "感嘆詞": abbr = "嘆"
+        default:                    abbr = String(partOfSpeech.prefix(1))
         }
-        
+
         if let sourceWord = sourceWord, !sourceWord.isEmpty {
-            return "\(label) \(sourceWord)"
+            return "\(abbr). \(sourceWord)"
         }
-        
-        return label
+        return abbr
+    }
+
+    private func actionToolbar() -> some View {
+        HStack(spacing: 6) {
+            ToolbarButton(icon: "speaker.wave.2.fill", tooltip: "朗讀",
+                          action: { viewModel.speakOriginal() })
+            ToolbarButton(icon: viewModel.showCopiedFeedback ? "checkmark" : "doc.on.doc",
+                          tooltip: "複製", action: { viewModel.copyTranslation() })
+            ToolbarButton(icon: viewModel.isSaved ? "bookmark.fill" : "bookmark",
+                          tooltip: viewModel.isSaved ? "取消收藏" : "加入收藏",
+                          isActive: viewModel.isSaved, action: { viewModel.toggleSaved() })
+        }
     }
 }
 
