@@ -9,6 +9,7 @@ func runTranslationLogicTests() {
         it("given English input, when translated, then shows Chinese translation and NO Zhuyin") {
             let mockProvider = MockTranslationProvider()
             mockProvider.mockResult = "蘋果"
+            mockProvider.mockDefinitions = [TranslationDefinition(partOfSpeech: "noun", translations: ["蘋果"])]
             let svc = TranslationService(provider: mockProvider)
             let vm = TranslationViewModel(translationService: svc)
             
@@ -16,6 +17,7 @@ func runTranslationLogicTests() {
             vm.translate(text: "Apple")
             
             try assertEqual(vm.currentItem?.translatedText, "蘋果")
+            try assertEqual(vm.currentItem?.definitions.first?.partOfSpeech, "noun")
             try assertEqual(vm.zhuyinText, "", "English translation should NOT have Zhuyin")
         }
         

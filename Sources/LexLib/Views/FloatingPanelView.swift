@@ -75,6 +75,38 @@ public struct FloatingPanelView: View {
                     .padding(.horizontal, 14).padding(.top, 8).padding(.bottom, 6)
                 }
                 
+                if !item.definitions.isEmpty {
+                    Rectangle()
+                        .fill(LinearGradient(colors: [Color.purple.opacity(0.2), Color.blue.opacity(0.2)],
+                                             startPoint: .leading, endPoint: .trailing))
+                        .frame(height: 1).padding(.horizontal, 14)
+                    
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("詞性")
+                            .font(.system(size: 9, weight: .bold, design: .rounded))
+                            .foregroundColor(Color.blue.opacity(0.65)).tracking(1.0)
+                        
+                        VStack(alignment: .leading, spacing: 5) {
+                            ForEach(Array(item.definitions.enumerated()), id: \.offset) { _, definition in
+                                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                                    Text(partOfSpeechLabel(definition.partOfSpeech, sourceWord: definition.sourceWord))
+                                        .font(.system(size: 10, weight: .semibold))
+                                        .foregroundColor(.secondary)
+                                        .frame(width: 78, alignment: .leading)
+                                    
+                                    Text(definition.translations.joined(separator: "、"))
+                                        .font(.system(size: 12, weight: .regular))
+                                        .foregroundColor(.primary.opacity(0.9))
+                                        .lineLimit(2)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .textSelection(.enabled)
+                                }
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 14).padding(.top, 8).padding(.bottom, 6)
+                }
+                
                 // Zhuyin annotation (only for Chinese text)
                 if !viewModel.zhuyinText.isEmpty {
                     if !item.translatedText.isEmpty {
@@ -152,6 +184,36 @@ public struct FloatingPanelView: View {
         .shadow(color: Color.black.opacity(0.3), radius: 20, x: 0, y: 8)
         .animation(.easeInOut(duration: 0.2), value: viewModel.showCopiedFeedback)
         .animation(.easeInOut(duration: 0.2), value: viewModel.isSaved)
+    }
+    
+    private func partOfSpeechLabel(_ partOfSpeech: String, sourceWord: String?) -> String {
+        let label: String
+        switch partOfSpeech.lowercased() {
+        case "noun":
+            label = "名詞"
+        case "verb":
+            label = "動詞"
+        case "adjective":
+            label = "形容詞"
+        case "adverb":
+            label = "副詞"
+        case "pronoun":
+            label = "代名詞"
+        case "preposition":
+            label = "介系詞"
+        case "conjunction":
+            label = "連接詞"
+        case "interjection":
+            label = "感嘆詞"
+        default:
+            label = partOfSpeech
+        }
+        
+        if let sourceWord = sourceWord, !sourceWord.isEmpty {
+            return "\(label) \(sourceWord)"
+        }
+        
+        return label
     }
 }
 

@@ -26,7 +26,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var vocabWindow: NSWindow?
     var vocabListVM = VocabularyListViewModel()
     var aboutWindow: NSWindow?
-    var updaterController: SPUStandardUpdaterController!
+    var updaterController: SPUStandardUpdaterController?
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -34,8 +34,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Setup AppController
         AppController.shared.viewModel = viewModel
         
-        // Setup Auto-Updater
-        updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+        // Setup Auto-Updater (skip if no SUFeedURL, e.g. dev builds)
+        if Bundle.main.object(forInfoDictionaryKey: "SUFeedURL") != nil {
+            updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+        }
         
         // Initial accessibility check
         if !AXIsProcessTrusted() {
@@ -106,9 +108,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func setupMenuBar() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         
+        let isDev = Bundle.main.bundleIdentifier?.contains("Dev") == true
+
         if let button = statusItem.button {
-            button.image = NSImage(systemSymbolName: "character.book.closed.fill", accessibilityDescription: "翻譯")
+            button.image = NSImage(systemSymbolName: isDev ? "hammer.fill" : "character.book.closed.fill", accessibilityDescription: "翻譯")
             button.image?.size = NSSize(width: 16, height: 16)
+            if isDev {
+                button.title = " Dev"
+            }
         }
         
         let menu = NSMenu()
@@ -160,7 +167,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc private func checkForUpdates() {
-        updaterController.checkForUpdates(nil)
+        updaterController?.checkForUpdates(nil)
     }
     
     @objc private func checkAccessibility() {

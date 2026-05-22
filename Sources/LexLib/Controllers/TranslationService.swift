@@ -38,7 +38,7 @@ public class TranslationService {
     }
     
     /// Translate text using the active provider
-    public func translate(text: String, completion: @escaping (String?, String?) -> Void) {
+    public func translate(text: String, completion: @escaping (String?, String?, [TranslationDefinition]) -> Void) {
         provider.translate(text: text, from: sourceLanguage, to: targetLanguage, completion: completion)
     }
 }

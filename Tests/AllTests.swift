@@ -27,6 +27,12 @@ func runTranslationItemTests() {
             try assertTrue(item.isTranslating)
         }
         
+        it("given definitions, when initialized, then part-of-speech data is retained") {
+            let definitions = [TranslationDefinition(partOfSpeech: "verb", translations: ["建造", "建立"], sourceWord: "build")]
+            let item = TranslationItem(originalText: "building", translatedText: "大樓", definitions: definitions, isTranslating: false)
+            try assertEqual(item.definitions, definitions)
+        }
+        
         // MARK: - Equatable (Parameterized)
         
         it("given items with different IDs but same text (parameterized), when compared, then they are not equal") {
@@ -218,7 +224,7 @@ func runTranslationServiceIntegrationTests() {
                 let semaphore = DispatchSemaphore(value: 0)
                 var result: String?
                 
-                svc.translate(text: word) { translated, _ in
+                svc.translate(text: word) { translated, _, _ in
                     result = translated
                     semaphore.signal()
                 }
@@ -240,7 +246,7 @@ func runTranslationServiceIntegrationTests() {
             let semaphore = DispatchSemaphore(value: 0)
             var result: String?
             
-            svc.translate(text: "The quick brown fox jumps over the lazy dog") { translated, _ in
+            svc.translate(text: "The quick brown fox jumps over the lazy dog") { translated, _, _ in
                 result = translated
                 semaphore.signal()
             }
@@ -265,7 +271,7 @@ func runTranslationServiceIntegrationTests() {
                 let semaphore = DispatchSemaphore(value: 0)
                 var result: String?
                 
-                svc.translate(text: tc.input) { translated, _ in
+                svc.translate(text: tc.input) { translated, _, _ in
                     result = translated
                     semaphore.signal()
                 }
@@ -288,15 +294,63 @@ class MockTranslationProvider: TranslationProvider {
     var identifier: String { "mock" }
     var lastTranslatedText: String?
     var mockResult: String?
+    var mockDefinitions: [TranslationDefinition] = []
     
-    func translate(text: String, from: String, to: String, completion: @escaping (String?, String?) -> Void) {
+    func translate(text: String, from: String, to: String, completion: @escaping (String?, String?, [TranslationDefinition]) -> Void) {
         lastTranslatedText = text
-        completion(mockResult ?? "[MOCK] \(text)", "[MOCK_Phonetics] \(text)")
+        completion(mockResult ?? "[MOCK] \(text)", "[MOCK_Phonetics] \(text)", mockDefinitions)
     }
 }
 
 func runTranslationProviderTests() {
     describe("TranslationProvider Protocol") {
+        
+        it("given Google dictionary response, when parsed, then definitions include part of speech") {
+            let json = #"[[["大樓","building",null,null,11],[null,null,"Dàlóu","ˈbildiNG"]],[["noun",["大廈","房","房子","建築","建築物","營造物"],[],"building",1]],"en"]"#
+            let parsed = GoogleTranslateProvider.parseResponse(data: Data(json.utf8))
+            
+            try assertEqual(parsed?.translation, "大樓")
+            try assertEqual(parsed?.phonetics, "ˈbildiNG")
+            try assertEqual(parsed?.definitions.first?.partOfSpeech, "noun")
+            try assertEqual(parsed?.definitions.first?.translations.first, "大廈")
+        }
+        
+        it("given -ing words (parameterized), when deriving lemma, then returns correct result") {
+            let cases: [(input: String, expected: String?, label: String)] = [
+                ("building", "build", "standard -ing word"),
+                ("running", "runn", "doubled consonant -ing"),
+                ("sing", nil, "word ≤5 chars ending in -ing"),
+                ("ring", nil, "short word ending in -ing"),
+                ("hello", nil, "word not ending in -ing"),
+                ("go", nil, "short non-ing word"),
+                ("   building  ", "build", "whitespace-padded -ing word"),
+            ]
+            for tc in cases {
+                let result = GoogleTranslateProvider.ingVerbLemmaCandidate(for: tc.input)
+                try assertEqual(result, tc.expected, "[\(tc.label)] '\(tc.input)' should map to \(tc.expected.map { "'\($0)'" } ?? "nil")")
+            }
+        }
+
+        it("given Chinese part-of-speech label, when checking isVerb, then matches both English and Chinese") {
+            try assertTrue(GoogleTranslateProvider.isVerb("verb"), "'verb' should be recognized as verb")
+            try assertTrue(GoogleTranslateProvider.isVerb("Verb"), "'Verb' should be recognized as verb (case-insensitive)")
+            try assertTrue(GoogleTranslateProvider.isVerb("動詞"), "'動詞' should be recognized as verb")
+            try assertFalse(GoogleTranslateProvider.isVerb("noun"), "'noun' should not be verb")
+            try assertFalse(GoogleTranslateProvider.isVerb("名詞"), "'名詞' should not be verb")
+            try assertFalse(GoogleTranslateProvider.isVerb("adjective"), "'adjective' should not be verb")
+        }
+
+        it("given API response with Chinese POS labels, when parsed, then definitions and translations are extracted") {
+            let json = #"[[["建造","build",null,null,11]],[["動詞",["搭","打","蓋","建","建立","建設"],[],"build",2],["名詞",["個子","壘","體格","體形"],[],"build",1]],"en"]"#
+            let parsed = GoogleTranslateProvider.parseResponse(data: Data(json.utf8))
+
+            try assertEqual(parsed?.definitions.count, 2, "Should have 2 definitions (動詞 + 名詞)")
+            try assertEqual(parsed?.definitions.first?.partOfSpeech, "動詞")
+            try assertTrue(GoogleTranslateProvider.isVerb(parsed?.definitions.first?.partOfSpeech ?? ""), "First definition should be verb")
+            try assertEqual(parsed?.definitions.first?.translations, ["搭", "打", "蓋", "建", "建立", "建設"])
+            try assertEqual(parsed?.definitions.last?.partOfSpeech, "名詞")
+            try assertEqual(parsed?.definitions.last?.translations.first, "個子")
+        }
         
         // MARK: - Protocol Conformance (Parameterized)
         
@@ -321,7 +375,7 @@ func runTranslationProviderTests() {
             let semaphore = DispatchSemaphore(value: 0)
             var result: String?
             
-            mock.translate(text: "Test", from: "en", to: "zh-TW") { translated, _ in
+            mock.translate(text: "Test", from: "en", to: "zh-TW") { translated, _, _ in
                 result = translated
                 semaphore.signal()
             }
@@ -346,7 +400,7 @@ func runTranslationProviderTests() {
             
             let semaphore = DispatchSemaphore(value: 0)
             var result: String?
-            svc.translate(text: "Switch test") { translated, _ in
+            svc.translate(text: "Switch test") { translated, _, _ in
                 result = translated
                 semaphore.signal()
             }

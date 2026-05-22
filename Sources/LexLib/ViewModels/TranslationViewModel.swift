@@ -61,12 +61,13 @@ public class TranslationViewModel: ObservableObject {
             self.isSaved = self.vocabularyManager.isSaved(original: trimmed)
             self.showCopiedFeedback = false
             
-            self.translationService.translate(text: trimmed) { [weak self] resultText, resultPhonetics in
+            self.translationService.translate(text: trimmed) { [weak self] resultText, resultPhonetics, resultDefinitions in
                 updateState {
                     if self?.currentItem?.id == newItem.id {
                         if let translated = resultText {
                             self?.currentItem?.translatedText = translated
                             self?.currentItem?.phonetics = resultPhonetics
+                            self?.currentItem?.definitions = resultDefinitions
                             // User requirement: English to TC should NOT show Zhuyin
                             self?.zhuyinText = ""
                         } else {

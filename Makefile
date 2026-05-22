@@ -2,6 +2,7 @@ APP_NAME=Lex
 APP_BUNDLE=$(APP_NAME).app
 MACOS_VERSION_MIN=13.0
 SIGN_IDENTITY ?= -
+SKIP_SPARKLE ?=
 
 VERSION=$(shell ./get_version.sh)
 
@@ -22,8 +23,17 @@ build:
 		Sources/LexLib/**/*.swift Sources/LexApp/main.swift
 	@install_name_tool -add_rpath @executable_path/../Frameworks $(APP_BUNDLE)/Contents/MacOS/$(APP_NAME)
 	@echo '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n\t<key>CFBundleDevelopmentRegion</key>\n\t<string>zh_TW</string>\n\t<key>CFBundleLocalizations</key>\n\t<array>\n\t\t<string>zh_TW</string>\n\t</array>\n\t<key>CFBundleExecutable</key>\n\t<string>$(APP_NAME)</string>\n\t<key>CFBundleIdentifier</key>\n\t<string>com.gemini.$(APP_NAME)</string>\n\t<key>CFBundlePackageType</key>\n\t<string>APPL</string>\n\t<key>LSUIElement</key>\n\t<string>YES</string>\n\t<key>CFBundleIconFile</key>\n\t<string>AppIcon</string>\n\t<key>CFBundleShortVersionString</key>\n\t<string>$(VERSION)</string>\n\t<key>CFBundleVersion</key>\n\t<string>$(VERSION)</string>\n\t<key>SUFeedURL</key>\n\t<string>https://mapleeeeeeeeeee.github.io/Lex/appcast.xml</string>\n\t<key>SUPublicEDKey</key>\n\t<string>PfCyMfARoazOM+1dL7i7WcLtY+ba2Vp5QUouj+p5F3E=</string>\n</dict>\n</plist>' > $(APP_BUNDLE)/Contents/Info.plist
-	@./Scripts/sparkle_bundle.sh sign $(APP_BUNDLE) "$(SIGN_IDENTITY)"
-	@./Scripts/sparkle_bundle.sh verify $(APP_BUNDLE)
+	@if [ -n "$(SKIP_SPARKLE)" ]; then \
+		plutil -remove SUFeedURL $(APP_BUNDLE)/Contents/Info.plist 2>/dev/null || true; \
+		plutil -remove SUPublicEDKey $(APP_BUNDLE)/Contents/Info.plist 2>/dev/null || true; \
+		if [ "$(SIGN_IDENTITY)" != "-" ]; then \
+			codesign --force --sign "$(SIGN_IDENTITY)" $(APP_BUNDLE); \
+		fi; \
+	fi
+	@if [ -z "$(SKIP_SPARKLE)" ]; then \
+		./Scripts/sparkle_bundle.sh sign $(APP_BUNDLE) "$(SIGN_IDENTITY)"; \
+		./Scripts/sparkle_bundle.sh verify $(APP_BUNDLE); \
+	fi
 	@echo "Build complete."
 
 icon:
@@ -37,6 +47,16 @@ icon:
 run: build
 	@echo "Running $(APP_NAME)..."
 	@./$(APP_BUNDLE)/Contents/MacOS/$(APP_NAME)
+
+DEV_SIGN_IDENTITY := $(shell security find-identity -v -p codesigning 2>/dev/null | grep "Lex Dev" | head -1 | awk '{print $$2}')
+
+dev:
+	@$(MAKE) build APP_NAME=Lex-Dev SKIP_SPARKLE=1 SIGN_IDENTITY="$(DEV_SIGN_IDENTITY)"
+
+dev-run:
+	@$(MAKE) dev
+	@echo "Running Lex-Dev..."
+	@./Lex-Dev.app/Contents/MacOS/Lex-Dev
 
 test:
 	@echo "Compiling tests..."
@@ -57,7 +77,7 @@ verify-sparkle:
 	@./Scripts/sparkle_bundle.sh verify $(APP_BUNDLE)
 
 clean:
-	@rm -rf $(APP_BUNDLE) .build Lex.dmg Lex.app.zip
+	@rm -rf $(APP_BUNDLE) Lex-Dev.app .build Lex.dmg Lex.app.zip
 	@echo "Cleaned up."
 
 zip: build
