@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.0...v1.2.1) (2026-05-22)
+
+
+### Bug Fixes
+
+* auto-terminate conflicting Lex instance on launch ([b2fb7c6](https://github.com/Mapleeeeeeeeeee/Lex/commit/b2fb7c69ddd95f7bafded573f98c48c13697ec5a))
+
 ## [1.2.0](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.1.16...v1.2.0) (2026-05-22)
 
 
