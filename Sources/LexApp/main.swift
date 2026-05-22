@@ -30,7 +30,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
-        
+
+        terminateConflictingInstance()
+
         // Setup AppController
         AppController.shared.viewModel = viewModel
         
@@ -303,5 +305,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func stopDismissMonitors() {
         if let monitor = clickMonitor { NSEvent.removeMonitor(monitor); clickMonitor = nil }
         if let monitor = keyMonitor { NSEvent.removeMonitor(monitor); keyMonitor = nil }
+    }
+
+    private func terminateConflictingInstance() {
+        let myBundleId = Bundle.main.bundleIdentifier ?? ""
+        let conflictId = myBundleId.contains("Dev") ? "com.gemini.Lex" : "com.gemini.Lex-Dev"
+        for app in NSWorkspace.shared.runningApplications where app.bundleIdentifier == conflictId {
+            app.terminate()
+        }
     }
 }
