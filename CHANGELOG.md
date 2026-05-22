@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.1.16...v1.2.0) (2026-05-22)
+
+
+### Features
+
+* add dictionary-style POS display and dev build separation ([4be0b2a](https://github.com/Mapleeeeeeeeeee/Lex/commit/4be0b2acef01afdf0bf52bce41f0ce59ee918a16))
+
+
+### Bug Fixes
+
+* add icon to launch-at-login menu item ([47c0efc](https://github.com/Mapleeeeeeeeeee/Lex/commit/47c0efc8b2c807cfa6fffe831d215c26cf1e70a7))
+* remove duplicate release workflow that conflicts with release-please ([ac1673f](https://github.com/Mapleeeeeeeeeee/Lex/commit/ac1673f2b330be87f11b5550e1f685706083d44e))
+
 ## [1.1.16] - 2026-03-06
 
 ### Fixed
