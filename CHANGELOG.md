@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.5](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.4...v1.2.5) (2026-05-23)
+
+
+### Bug Fixes
+
+* trust self-signed certificate in CI for codesign identity lookup ([37d2eda](https://github.com/Mapleeeeeeeeeee/Lex/commit/37d2eda469c52d93d09defee1a89d296231772ce))
+
 ## [1.2.4](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.3...v1.2.4) (2026-05-23)
 
 
