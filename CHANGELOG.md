@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.4](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.3...v1.2.4) (2026-05-23)
+
+
+### Bug Fixes
+
+* add build.keychain to keychain search list for CI signing ([0edeec2](https://github.com/Mapleeeeeeeeeee/Lex/commit/0edeec2af57c43cc75080117890eeacfba48961a))
+* trigger release for CI signing pipeline test ([71a1dc8](https://github.com/Mapleeeeeeeeeee/Lex/commit/71a1dc8b8cf08429e3c42d6d55af1d4dfc1de458))
+
 ## [1.2.3](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.2...v1.2.3) (2026-05-23)
 
 
