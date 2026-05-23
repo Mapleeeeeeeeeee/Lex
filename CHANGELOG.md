@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.7](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.6...v1.2.7) (2026-05-23)
+
+
+### Bug Fixes
+
+* use find-identity without -v flag to include untrusted certs ([aacb16a](https://github.com/Mapleeeeeeeeeee/Lex/commit/aacb16a5c89d0060b5a0b209232f5647d5cb878c))
+
 ## [1.2.6](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.5...v1.2.6) (2026-05-23)
 
 
