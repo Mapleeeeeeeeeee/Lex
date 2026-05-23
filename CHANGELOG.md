@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.3](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.2...v1.2.3) (2026-05-23)
+
+
+### Bug Fixes
+
+* sign release builds with self-signed certificate for stable identity ([d8e75a6](https://github.com/Mapleeeeeeeeeee/Lex/commit/d8e75a66b4744ca11d14cd982fc15bedbe0daf57))
+* use proper macOS squircle icon format (824x824 with 100px gutter) ([63d3506](https://github.com/Mapleeeeeeeeeee/Lex/commit/63d3506c0dc059df4e94639e89dae641427ef250))
+
 ## [1.2.2](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.1...v1.2.2) (2026-05-23)
 
 
