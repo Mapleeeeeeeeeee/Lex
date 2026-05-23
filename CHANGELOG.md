@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.1...v1.2.2) (2026-05-23)
+
+
+### Bug Fixes
+
+* update app icon with rounded corners and add menu bar hide option ([2336503](https://github.com/Mapleeeeeeeeeee/Lex/commit/2336503455ed8f5f03ef4a15d3f5d93284857235))
+
 ## [1.2.1](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.0...v1.2.1) (2026-05-22)
 
 
