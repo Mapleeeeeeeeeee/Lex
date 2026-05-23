@@ -161,6 +161,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         updateItem.target = self
         menu.addItem(updateItem)
         
+        let hideBarItem = NSMenuItem(title: "隱藏選單列圖示", action: #selector(hideMenuBarIcon), keyEquivalent: "")
+        hideBarItem.image = NSImage(systemSymbolName: "eye.slash", accessibilityDescription: nil)
+        hideBarItem.target = self
+        menu.addItem(hideBarItem)
+
         let quitItem = NSMenuItem(title: "結束", action: #selector(quitApp), keyEquivalent: "q")
         quitItem.image = NSImage(systemSymbolName: "power", accessibilityDescription: nil)
         quitItem.target = self
@@ -267,6 +272,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         aboutWindow = window
     }
     
+    @objc private func hideMenuBarIcon() {
+        let alert = NSAlert()
+        alert.messageText = "隱藏選單列圖示？"
+        alert.informativeText = "翻譯功能（雙擊 Command）仍可正常使用。\n重新啟動 Lex 即可恢復圖示。"
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "隱藏")
+        alert.addButton(withTitle: "取消")
+
+        if alert.runModal() == .alertFirstButtonReturn {
+            statusItem.isVisible = false
+        }
+    }
+
     @objc private func quitApp() {
         NSApp.terminate(nil)
     }
