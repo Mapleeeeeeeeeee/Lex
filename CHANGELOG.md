@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.6](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.5...v1.2.6) (2026-05-23)
+
+
+### Bug Fixes
+
+* use find-identity without trust requirement in CI signing ([0d511d7](https://github.com/Mapleeeeeeeeeee/Lex/commit/0d511d70ee7fdbec3dcf19726e20c8552cf9d346))
+
 ## [1.2.5](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.4...v1.2.5) (2026-05-23)
 
 
