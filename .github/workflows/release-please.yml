@@ -30,10 +30,24 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        
+
+      - name: Import Signing Certificate
+        env:
+          SIGNING_CERTIFICATE_P12: ${{ secrets.SIGNING_CERTIFICATE_P12 }}
+          SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.SIGNING_CERTIFICATE_PASSWORD }}
+        run: |
+          echo "$SIGNING_CERTIFICATE_P12" | base64 --decode > /tmp/cert.p12
+          security create-keychain -p "" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+          security import /tmp/cert.p12 -k build.keychain -P "$SIGNING_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" build.keychain
+          rm /tmp/cert.p12
+
       - name: Build Application
         run: |
-          make build
+          SIGN_IDENTITY=$(security find-identity -v -p codesigning build.keychain | head -1 | awk '{print $2}')
+          make build SIGN_IDENTITY="$SIGN_IDENTITY"
 
       - name: Verify Sparkle Bundle
         run: |
