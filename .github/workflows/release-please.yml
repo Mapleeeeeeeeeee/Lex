@@ -44,7 +44,7 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" build.keychain
           security list-keychains -s build.keychain login.keychain-db
           rm /tmp/cert.p12
-          SIGN_HASH=$(security find-identity -v build.keychain | head -1 | awk '{print $2}')
+          SIGN_HASH=$(security find-identity build.keychain | grep -v "identities found" | head -1 | awk '{print $2}')
           echo "SIGN_HASH=$SIGN_HASH" >> "$GITHUB_ENV"
           echo "Found identity: $SIGN_HASH"
 
