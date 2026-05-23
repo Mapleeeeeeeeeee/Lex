@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.8](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.7...v1.2.8) (2026-05-23)
+
+
+### Bug Fixes
+
+* resolve CI signing identity with regex and fix appcast push conflict ([1f9d11d](https://github.com/Mapleeeeeeeeeee/Lex/commit/1f9d11d36a9a0bd05feb1d04c01ad5ce44c0be81))
+
 ## [1.2.7](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.6...v1.2.7) (2026-05-23)
 
 
