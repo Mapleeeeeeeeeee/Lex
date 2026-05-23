@@ -44,9 +44,11 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" build.keychain
           security list-keychains -s build.keychain login.keychain-db
           rm /tmp/cert.p12
-          SIGN_HASH=$(security find-identity build.keychain | grep -v "identities found" | head -1 | awk '{print $2}')
+          echo "All identities in build.keychain:"
+          security find-identity build.keychain-db
+          SIGN_HASH=$(security find-identity build.keychain-db | grep -oE '[A-F0-9]{40}' | head -1)
           echo "SIGN_HASH=$SIGN_HASH" >> "$GITHUB_ENV"
-          echo "Found identity: $SIGN_HASH"
+          echo "Found identity: ${SIGN_HASH:-NONE}"
 
       - name: Build Application
         run: |
@@ -82,6 +84,7 @@ jobs:
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch origin main
           git checkout main
+          git pull --rebase origin main
           git add docs/appcast.xml
           git commit -m "chore: update appcast.xml for release ${{ needs.release-please.outputs.tag_name }}" || echo "No changes to commit"
           git push origin main
