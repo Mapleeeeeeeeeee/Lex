@@ -84,9 +84,9 @@ jobs:
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch origin main
           git checkout main
-          git pull --rebase origin main
           git add docs/appcast.xml
           git commit -m "chore: update appcast.xml for release ${{ needs.release-please.outputs.tag_name }}" || echo "No changes to commit"
+          git pull --rebase origin main
           git push origin main
           
       - name: Upload Release Assets
