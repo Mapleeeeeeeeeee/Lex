@@ -3,12 +3,12 @@
     <channel>
         <title>Lex</title>
         <item>
-            <title>1.2.2</title>
-            <pubDate>Sat, 23 May 2026 17:49:52 +0000</pubDate>
-            <sparkle:version>1.2.2</sparkle:version>
-            <sparkle:shortVersionString>1.2.2</sparkle:shortVersionString>
+            <title>1.2.9</title>
+            <pubDate>Mon, 25 May 2026 07:31:07 +0000</pubDate>
+            <sparkle:version>1.2.9</sparkle:version>
+            <sparkle:shortVersionString>1.2.9</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>10.13</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/Mapleeeeeeeeeee/Lex/releases/download/v1.2.2/Lex.dmg" length="4524021" type="application/octet-stream" sparkle:edSignature="cRQWytpm/hefdTeXDdvn12bW3WP5CCqeWSlJWJcSQqP4J2TAmZOtMpwRtGqUkKl2eImIoEE4pckOq3ATc0TTCQ=="/>
+            <enclosure url="https://github.com/Mapleeeeeeeeeee/Lex/releases/download/v1.2.9/Lex.dmg" length="3795793" type="application/octet-stream" sparkle:edSignature="XAhvonCx5syv9i1W28UmNtCBrNZZRzIPC8vWxxOvHjIY1vP1AvEY9IaG21bmvMmMjaolmaYOd/xlIi1keJBkBQ=="/>
         </item>
     </channel>
 </rss>
