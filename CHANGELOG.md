@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.9](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.8...v1.2.9) (2026-05-25)
+
+
+### Bug Fixes
+
+* commit appcast before pull --rebase to avoid unstaged changes error ([6eb3176](https://github.com/Mapleeeeeeeeeee/Lex/commit/6eb3176e494582c02085b4fc7951c12fb8852752))
+
 ## [1.2.8](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.7...v1.2.8) (2026-05-23)
 
 
