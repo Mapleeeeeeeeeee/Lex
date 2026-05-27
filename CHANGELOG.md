@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.11](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.10...v1.2.11) (2026-05-27)
+
+
+### Bug Fixes
+
+* prevent zip/dmg from re-triggering build with ad-hoc signing ([730eab6](https://github.com/Mapleeeeeeeeeee/Lex/commit/730eab6c496717c2423a95f349fb2f2fcfdfc5bd))
+
 ## [1.2.10](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.9...v1.2.10) (2026-05-27)
 
 
