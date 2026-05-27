@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.10](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.9...v1.2.10) (2026-05-27)
+
+
+### Bug Fixes
+
+* increase line limits for long text translation display ([1d6f5ce](https://github.com/Mapleeeeeeeeeee/Lex/commit/1d6f5ce23327e0a3d2aeb9a0bb0613f20d052fd8))
+
 ## [1.2.9](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.8...v1.2.9) (2026-05-25)
 
 
