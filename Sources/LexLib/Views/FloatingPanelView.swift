@@ -20,7 +20,7 @@ public struct FloatingPanelView: View {
                             Text(item.translatedText)
                                 .font(.system(size: 20, weight: .semibold))
                                 .foregroundColor(.primary)
-                                .lineLimit(4).multilineTextAlignment(.leading)
+                                .lineLimit(10).multilineTextAlignment(.leading)
                                 .textSelection(.enabled)
                         }
                         Spacer(minLength: 4)
@@ -33,7 +33,7 @@ public struct FloatingPanelView: View {
                         Text(item.originalText)
                             .font(.system(size: 12, weight: .regular))
                             .foregroundColor(.secondary)
-                            .lineLimit(2)
+                            .lineLimit(4)
                             .layoutPriority(1)
                             .textSelection(.enabled)
                         if let phonetics = item.phonetics, !phonetics.isEmpty {
@@ -50,7 +50,7 @@ public struct FloatingPanelView: View {
                         Text(item.originalText)
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(.primary)
-                            .lineLimit(4)
+                            .lineLimit(10)
                             .textSelection(.enabled)
                         Spacer(minLength: 4)
                         actionToolbar()
