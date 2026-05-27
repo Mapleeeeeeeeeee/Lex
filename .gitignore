@@ -37,6 +37,8 @@ Scripts/moedict/
 Scripts/node_modules/
 testZhuyin.swift
 testZhuyin2.swift
+Lex.app/
+Lex-Dev.app/
 Lex.dmg
 Lex.app.zip
 test_appcast/
