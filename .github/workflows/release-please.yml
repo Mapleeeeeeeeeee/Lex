@@ -66,11 +66,15 @@ jobs:
           
       - name: Create ZIP Archive
         run: |
-          make zip
-          
+          zip -r Lex.app.zip Lex.app
+
       - name: Create DMG Image
         run: |
-          make dmg
+          mkdir -p build_dmg
+          cp -a Lex.app build_dmg/
+          ln -s /Applications build_dmg/Applications
+          hdiutil create -volname "Lex" -srcfolder build_dmg -ov -format UDZO Lex.dmg
+          rm -rf build_dmg
           
       - name: Generate Sparkle Appcast
         env:
