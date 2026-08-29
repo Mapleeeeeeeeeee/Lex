@@ -314,6 +314,15 @@ func runTranslationProviderTests() {
             try assertEqual(parsed?.definitions.first?.partOfSpeech, "noun")
             try assertEqual(parsed?.definitions.first?.translations.first, "大廈")
         }
+
+        it("given clients5 compact response, when parsed, then returns translation without dictionary metadata") {
+            let json = #"[["你好","en"]]"#
+            let parsed = GoogleTranslateProvider.parseResponse(data: Data(json.utf8))
+
+            try assertEqual(parsed?.translation, "你好")
+            try assertNil(parsed?.phonetics)
+            try assertEqual(parsed?.definitions, [])
+        }
         
         it("given -ing words (parameterized), when deriving lemma, then returns correct result") {
             let cases: [(input: String, expected: String?, label: String)] = [

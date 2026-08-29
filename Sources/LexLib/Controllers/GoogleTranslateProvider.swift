@@ -1,13 +1,13 @@
 import Foundation
 
-/// Google Translate provider using the free, unofficial API endpoint.
+/// Google Translate provider using a free, unofficial compact API endpoint.
 /// This is the default provider bundled with Lex.
 public class GoogleTranslateProvider: TranslationProvider {
     
     public var name: String { "Google Translate" }
     public var identifier: String { "google" }
     
-    private let baseURL = "https://translate.googleapis.com/translate_a/single"
+    private let baseURL = "https://clients5.google.com/translate_a/t"
     
     public init() {}
     
@@ -44,19 +44,43 @@ public class GoogleTranslateProvider: TranslationProvider {
         to targetLanguage: String,
         completion: @escaping (String?, String?, [TranslationDefinition]) -> Void
     ) {
-        guard let encodedText = text.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+        guard var components = URLComponents(string: baseURL) else {
+            completion(nil, nil, [])
+            return
+        }
+
+        let queryItems = [
+            URLQueryItem(name: "client", value: "dict-chrome-ex"),
+            URLQueryItem(name: "sl", value: sourceLanguage),
+            URLQueryItem(name: "tl", value: targetLanguage),
+            URLQueryItem(name: "q", value: text),
+        ]
+        var allowedQueryValueCharacters = CharacterSet.urlQueryAllowed
+        allowedQueryValueCharacters.remove(charactersIn: "&=+")
+        let encodedQueryItems = queryItems.compactMap { item -> String? in
+            guard let encodedName = item.name.addingPercentEncoding(withAllowedCharacters: allowedQueryValueCharacters),
+                  let encodedValue = item.value?.addingPercentEncoding(withAllowedCharacters: allowedQueryValueCharacters) else {
+                return nil
+            }
+            return "\(encodedName)=\(encodedValue)"
+        }
+        guard encodedQueryItems.count == queryItems.count else {
+            completion(nil, nil, [])
+            return
+        }
+        components.percentEncodedQuery = encodedQueryItems.joined(separator: "&")
+
+        guard let url = components.url else {
             completion(nil, nil, [])
             return
         }
         
-        let urlString = "\(baseURL)?client=gtx&sl=\(sourceLanguage)&tl=\(targetLanguage)&dt=t&dt=rm&dt=bd&q=\(encodedText)"
-        guard let url = URL(string: urlString) else {
-            completion(nil, nil, [])
-            return
-        }
-        
-        let task = URLSession.shared.dataTask(with: url) { data, _, error in
-            guard let data = data, error == nil, let parsed = Self.parseResponse(data: data) else {
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            guard error == nil,
+                  let httpResponse = response as? HTTPURLResponse,
+                  (200...299).contains(httpResponse.statusCode),
+                  let data,
+                  let parsed = Self.parseResponse(data: data) else {
                 completion(nil, nil, [])
                 return
             }
@@ -77,13 +101,17 @@ public class GoogleTranslateProvider: TranslationProvider {
             var phonetics: String? = nil
             
             if let firstArray = jsonResponse.first as? [Any] {
-                for item in firstArray {
-                    if let itemArray = item as? [Any] {
-                        // Elements with null translation/source slots often contain pronunciation at index 3.
-                        if itemArray.count >= 4, itemArray[0] is NSNull, itemArray[1] is NSNull, let p = itemArray[3] as? String {
-                            phonetics = p
-                        } else if let translatedPart = itemArray.first as? String {
-                            fullTranslation += translatedPart
+                if let compactTranslation = firstArray.first as? String {
+                    fullTranslation = compactTranslation
+                } else {
+                    for item in firstArray {
+                        if let itemArray = item as? [Any] {
+                            // Elements with null translation/source slots often contain pronunciation at index 3.
+                            if itemArray.count >= 4, itemArray[0] is NSNull, itemArray[1] is NSNull, let p = itemArray[3] as? String {
+                                phonetics = p
+                            } else if let translatedPart = itemArray.first as? String {
+                                fullTranslation += translatedPart
+                            }
                         }
                     }
                 }
