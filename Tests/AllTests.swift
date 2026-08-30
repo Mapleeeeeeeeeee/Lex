@@ -238,6 +238,41 @@ func runTranslationServiceIntegrationTests() {
                 print("       '\(word)' → '\(result!)'")
             }
         }
+
+        it("given a stable English dictionary word, when translated, then returns Chinese translation, pronunciation, and part-of-speech definitions") {
+            let svc = TranslationService()
+            let semaphore = DispatchSemaphore(value: 0)
+            var translatedText: String?
+            var sourcePronunciation: String?
+            var definitions: [TranslationDefinition] = []
+
+            svc.translate(text: "development") { translated, pronunciation, returnedDefinitions in
+                translatedText = translated
+                sourcePronunciation = pronunciation
+                definitions = returnedDefinitions
+                semaphore.signal()
+            }
+
+            let timeout = semaphore.wait(timeout: .now() + 10)
+            if timeout == .timedOut {
+                throw AssertionError(description: "Timeout translating 'development'")
+            }
+
+            try assertTrue(
+                translatedText?.isEmpty == false,
+                "Translation of 'development' should contain Traditional Chinese text"
+            )
+            try assertTrue(
+                sourcePronunciation?.isEmpty == false,
+                "Translation of 'development' should include a source pronunciation"
+            )
+            try assertTrue(
+                definitions.contains {
+                    !$0.partOfSpeech.isEmpty && !$0.translations.isEmpty
+                },
+                "Translation of 'development' should include a non-empty part-of-speech definition group"
+            )
+        }
         
         // MARK: - Long Sentence
         

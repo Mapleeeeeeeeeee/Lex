@@ -1,13 +1,13 @@
 import Foundation
 
-/// Google Translate provider using a free, unofficial compact API endpoint.
+/// Google Translate provider using a free, unofficial API endpoint.
 /// This is the default provider bundled with Lex.
 public class GoogleTranslateProvider: TranslationProvider {
     
     public var name: String { "Google Translate" }
     public var identifier: String { "google" }
     
-    private let baseURL = "https://clients5.google.com/translate_a/t"
+    private let baseURL = "https://clients5.google.com/translate_a/single"
     
     public init() {}
     
@@ -53,6 +53,9 @@ public class GoogleTranslateProvider: TranslationProvider {
             URLQueryItem(name: "client", value: "dict-chrome-ex"),
             URLQueryItem(name: "sl", value: sourceLanguage),
             URLQueryItem(name: "tl", value: targetLanguage),
+            URLQueryItem(name: "dt", value: "t"),
+            URLQueryItem(name: "dt", value: "rm"),
+            URLQueryItem(name: "dt", value: "bd"),
             URLQueryItem(name: "q", value: text),
         ]
         var allowedQueryValueCharacters = CharacterSet.urlQueryAllowed
