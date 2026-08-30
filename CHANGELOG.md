@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.12](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.11...v1.2.12) (2026-08-30)
+
+
+### Bug Fixes
+
+* restore Google translation metadata ([9d4684e](https://github.com/Mapleeeeeeeeeee/Lex/commit/9d4684e76f0f90091d594b7aaa32e12f0401dc1f))
+* switch Google translation to clients5 endpoint ([8c529bb](https://github.com/Mapleeeeeeeeeee/Lex/commit/8c529bbc6de2c5dace5c763fba03a81441a358af))
+
 ## [1.2.11](https://github.com/Mapleeeeeeeeeee/Lex/compare/v1.2.10...v1.2.11) (2026-05-27)
 
 
